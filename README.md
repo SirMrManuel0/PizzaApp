@@ -19,7 +19,7 @@ Die PizzaApp ist eine Anwendung, die es Benutzern ermöglicht, Pizzen auszuwähl
 
 ## Verwendung
 
-Lade die neueste (und wahrscheinlich einzige) Version der .jar-Datei aus dem [Release-Bereich](releases/tag/v1.0.0) herunter oder klone das Repo.
+Lade die neueste (und wahrscheinlich einzige) Version der .jar-Datei aus dem [Release-Bereich](https://github.com/SirMrManuel0/PizzaApp/releases/tag/v1.0.0) herunter oder klone das Repo.
 Stelle sicher, dass Java Development Kit (JDK) 11 auf deinem System installiert ist.
 
 
