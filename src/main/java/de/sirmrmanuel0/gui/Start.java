@@ -329,7 +329,6 @@ public class Start extends CustomFrame{
                     return instances;
                 }
                 for (String className : classNames) {
-                    System.out.println(className);
                     // Nur Java-Dateien berücksichtigen
                     if (className.endsWith(".java")) {
                         // Konstruiere den vollständigen Klassenpfad (ohne ".java" am Ende)
