@@ -1,70 +1,47 @@
 package de.sirmrmanuel0.gui;
 
-import de.sirmrmanuel0.pizza.BetterPizza;
-import de.sirmrmanuel0.pizza.pizzen.*;
+import de.sirmrmanuel0.logic.Warenkorb;
+import de.sirmrmanuel0.pizza.Pizza;
 
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class Start extends CustomFrame{
-    protected BigDecimal GesamtSumme;
     protected JPanel Main;
     protected JPanel Pizzen;
     protected JPanel PizzenWrapper;
     protected JScrollPane PizzenScroll;
     protected JButton Warenkorb;
     protected ArrayList<JPanel> PizzenList;
-    protected ArrayList<BetterPizza> ObjPizzenList;
+    protected ArrayList<Pizza[]> ObjPizzenList;
     protected ArrayList<JPanel> GesuchtePizzenList;
-    protected ArrayList<BetterPizza> WarenkorbList;
+    protected Warenkorb Korb;
 
     public Start(){
         super(1.5, 1, 1, 1.2, "Pizza Lieferung Deluxe", false);
-        WarenkorbList = new ArrayList<BetterPizza>();
-        GesamtSumme = new BigDecimal(0);
+        Korb = new Warenkorb();
         setBackgroundImage(loadImage("background.jpg"));
-        initComponents();
+        initComponents(true);
         setVisible(true);
     }
 
-    public Start(ArrayList<BetterPizza> WarenkorbList, Point Location){
+    public Start(Warenkorb Korb, Point Location){
         super(1.5, 1, 1, 1.2, "Pizza Lieferung Deluxe", false);
-        this.WarenkorbList = WarenkorbList;
-        GesamtSumme = new BigDecimal(0);
-
-        for (BetterPizza Pizza : WarenkorbList){
-            BigDecimal Preis = new BigDecimal(0);
-            for (int i = 0; i < 4 ; i++){
-                BigDecimal EinzelPreis = new BigDecimal(Pizza.getPreise()[i]);
-                BigDecimal Menge = new BigDecimal(Pizza.getAnzahl()[i]);
-                Preis = Preis.add(EinzelPreis.multiply(Menge));
-            }
-            GesamtSumme = GesamtSumme.add(Preis);
-        }
-
-        GesamtSumme = GesamtSumme.multiply(new BigDecimal(100));
-        BigDecimal temp = new BigDecimal("0." + String.valueOf(GesamtSumme).substring(String.valueOf(GesamtSumme).length()-3,
-                String.valueOf(GesamtSumme).length()-1));
-        GesamtSumme = new BigDecimal(GesamtSumme.intValue()/ 100);
-        GesamtSumme = GesamtSumme.add(temp);
-
+        this.Korb = Korb;
         setBackgroundImage(loadImage("background.jpg"));
-        initComponents();
-        Warenkorb.setText("<html>Zum Warenkorb<br>" + String.valueOf(GesamtSumme).replace(".", ",") + "€</html>");
+        initComponents(false);
+        Warenkorb.setText("<html>Zum Warenkorb<br>" + String.valueOf(Korb.getGesamtPreis()).replace(".", ",") + "€</html>");
         Warenkorb.setEnabled(true);
         setLocation(Location);
         setVisible(true);
     }
 
-    protected void initComponents(){
+    protected void initComponents(boolean boolInitPizzen){
         JPanel Footer = new JPanel(new GridBagLayout());
         JPanel Header = new JPanel(new GridBagLayout());
         Main = new JPanel();
@@ -80,7 +57,7 @@ public class Start extends CustomFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new Warenkorb(WarenkorbList, getLocation(), GesamtSumme);
+                new Kasse(Korb, getLocation());
             }
         });
 
@@ -145,7 +122,7 @@ public class Start extends CustomFrame{
         Footer.add(Datenschutz, footerGbc);
         Footer.add(Kontakt, footerGbc);
 
-        initMain();
+        initMain(boolInitPizzen);
 
         Main.setBackground(new Color(0,0,0,0));
 
@@ -154,7 +131,7 @@ public class Start extends CustomFrame{
         add(Footer);
     }
 
-    protected void initMain(){
+    protected void initMain(boolean boolInitPizzen){
         PlaceholderTextField Suche = new PlaceholderTextField("Suche");
         Suche.addKeyListener(new SucheKeyListener());
         PizzenWrapper = new JPanel();
@@ -165,11 +142,18 @@ public class Start extends CustomFrame{
         Suche.setForeground(Color.WHITE);
         Suche.setBorder(new LineBorder(Color.BLACK));
 
-        ArrayList<BetterPizza> instances = getInstances();
+        ArrayList<Pizza[]> instances = Korb.getAllPossibleInstances();
         Pizzen.setLayout(new GridLayout(instances.size(),1));
         Pizzen.setBackground(new Color(0,0,0,0));
 
-        initPizzen();
+        if (boolInitPizzen){
+            initPizzen();
+        } else {
+            for (JPanel panel : Korb.getAllPossiblePanel()){
+                Pizzen.add(panel);
+            }
+        }
+
 
         PizzenScroll = new JScrollPane(Pizzen);
         PizzenScroll.setBackground(new Color(0,0,0,0));
@@ -201,19 +185,20 @@ public class Start extends CustomFrame{
     }
 
     protected void initPizzen(){
-        ObjPizzenList = getInstances();
+        ObjPizzenList = Korb.getAllPossibleInstances();
         PizzenList = new ArrayList<JPanel>();
         GesuchtePizzenList = new ArrayList<JPanel>();
         boolean EvenChild = false;
-        for (BetterPizza Pizza : ObjPizzenList){
+        for (int i = 0; i<ObjPizzenList.size(); i++){
+            Pizza[] Pizza = ObjPizzenList.get(i);
             JPanel PizzaWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0 ,0));
             RoundedCornerPanel PizzaPanel = new RoundedCornerPanel(25);
-            RoundedButton Small = new RoundedButton( Pizza.getSizes()[0] + "cm " + Pizza.getPreise()[0] + "€");
-            RoundedButton Mid = new RoundedButton(Pizza.getSizes()[1] + "cm " + Pizza.getPreise()[1] + "€");
-            RoundedButton Normal = new RoundedButton(Pizza.getSizes()[2] + "cm " + Pizza.getPreise()[2] + "€");
-            RoundedButton Big = new RoundedButton(Pizza.getSizes()[3] + "cm " + Pizza.getPreise()[3] + "€");
-            JLabel Name = new JLabel(Pizza.getName());
-            JLabel Beschreibung = new JLabel(Pizza.getBeschreibung());
+            RoundedButton Small = new RoundedButton( "25 cm " + Pizza[0].getPreis() + "€");
+            RoundedButton Mid = new RoundedButton("28 cm " + Pizza[1].getPreis() + "€");
+            RoundedButton Normal = new RoundedButton("32 cm " + Pizza[2].getPreis() + "€");
+            RoundedButton Big = new RoundedButton("38 cm " + Pizza[3].getPreis() + "€");
+            JLabel Name = new JLabel(Pizza[0].getName());
+            JLabel Beschreibung = new JLabel(Pizza[0].getBeschreibung());
             ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png"));
             JLabel Icon = new JLabel();
             JPanel IconPanel = new JPanel();
@@ -303,102 +288,11 @@ public class Start extends CustomFrame{
             PizzaWrapper.add(PizzaPanel);
             Pizzen.add(PizzaWrapper);
             PizzenList.add(PizzaWrapper);
+            Korb.addAllPossiblePanel(PizzaWrapper);
         }
 
     }
 
-    protected  ArrayList<BetterPizza> getInstances() {
-
-        // Folgender Code funktioniert nur für IDEs für die .jar Datei ist der Code ab ---------------------------------------------------
-        // Liste zur Speicherung von Instanzen erstellen
-        ArrayList<BetterPizza> instances = new ArrayList<>();
-
-        try {
-            String packageName = "de.sirmrmanuel0.pizza.pizzen";
-            // Pfad des Pakets im Dateisystem erstellen
-            String packagePath = packageName.replace(".", "/");
-            File packageDirectory = new File("src/main/java/" + packagePath);
-
-            // Überprüfen, ob das Verzeichnis existiert und ein Verzeichnis ist
-            if (packageDirectory.exists() && packageDirectory.isDirectory()) {
-                // Liste aller Dateinamen im Verzeichnis abrufen
-                String[] classNames = packageDirectory.list();
-
-                // Wenn keine Dateien gefunden wurden, die Liste zurückgeben
-                if (classNames == null) {
-                    return instances;
-                }
-                for (String className : classNames) {
-                    // Nur Java-Dateien berücksichtigen
-                    if (className.endsWith(".java")) {
-                        // Konstruiere den vollständigen Klassenpfad (ohne ".java" am Ende)
-                        String fullClassName = packageName + "." + className.substring(0, className.length() - 5);
-
-                        // Lade die Klasse
-                        // Class<?> bedeutet, dass unbekannteKlasse eine Instanz einer unbekannten Klasse ist.
-                        Class<?> unbekannteKlasse = Class.forName(fullClassName);
-
-                        // Instanz der Klasse erstellen und zur Liste hinzufügen
-                        // Constructor<?> bedeutet, dass constructor ein unbekannter Konstruktor für die Klasse ist.
-                        Constructor<?> constructor = unbekannteKlasse.getDeclaredConstructor();
-
-                        // constructor.newInstance() erstellt eine neue Instanz der Klasse.
-                        instances.add((BetterPizza) constructor.newInstance());
-
-
-                    }
-                }
-
-            }
-        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
-                 IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        if (instances.isEmpty()){
-            // ---------------------------------------------------
-            instances.add(new Chicago());
-            instances.add(new Dallas());
-            instances.add(new HotSanAntonio());
-            instances.add(new Montana());
-            instances.add(new Kentucky());
-            instances.add(new Pittsburgh());
-            instances.add(new SanFrancisco());
-            instances.add(new HotTucson());
-            instances.add(new Kansas());
-            instances.add(new NewOrleans());
-            instances.add(new NewHolland());
-            instances.add(new Bakersfie());
-            instances.add(new Denv());
-            instances.add(new Memphis());
-            instances.add(new ElPaso());
-            instances.add(new NewArizona());
-            instances.add(new Buffalo());
-            instances.add(new Alaska());
-            instances.add(new VegetarianIsland());
-            instances.add(new ChinaTown());
-            instances.add(new Wyoming());
-            instances.add(new California());
-            instances.add(new Seattle());
-            instances.add(new Texas());
-            instances.add(new Indiana());
-            instances.add(new Utah());
-            instances.add(new Florida());
-            instances.add(new Tacoma());
-            instances.add(new Pasadena());
-            instances.add(new Iowa());
-            instances.add(new NewBe());
-            instances.add(new Oceanside());
-            instances.add(new Vermo());
-            instances.add(new Virginia());
-            instances.add(new SantaMaria());
-            instances.add(new VollkornTippCharlotte());
-            instances.add(new StLouis());
-            instances.add(new Washington());
-            instances.add(new SantaFe());
-
-        }
-        return instances;
-    }
 
     static class PizzenMouseAdapter extends MouseAdapter {
         protected Color BackgroundMouseExited = Color.WHITE;
@@ -436,22 +330,42 @@ public class Start extends CustomFrame{
 
     protected class PizzenActionListener implements ActionListener{
         protected int Index;
-        protected BetterPizza Pizza;
+        protected Pizza[] Pizza;
 
-        public PizzenActionListener(int Index, BetterPizza Pizza){
+        public PizzenActionListener(int Index, Pizza[] Pizza){
             this.Index = Index;
             this.Pizza = Pizza;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String Name = Pizza.getName();
+            String Name = Pizza[Index].getName();
+            String size = "";
             JComboBox<Integer> Anzahl = new JComboBox<>(new Integer[]{1,2,3,4,5,6,7,8,9,10});
             Anzahl.setEditable(true);
 
+            switch(Index){
+                case 0:{
+                    size = "25";
+                    break;
+                }
+                case 1:{
+                    size = "28";
+                    break;
+                }
+                case 2:{
+                    size = "32";
+                    break;
+                }
+                case 3:{
+                    size = "38";
+                    break;
+                }
+            }
+
             Object[] message = {
-                    "Größe: " + Pizza.getSizes()[Index] + "cm",
-                    "Einzelpreis: " + String.valueOf(Pizza.getPreise()[Index]).replace(".", ",") + "€",
+                    "Größe: " + size + "cm",
+                    "Einzelpreis: " + String.valueOf(Pizza[Index].getPreis()).replace(".", ",") + "€",
                     "Anzahl:", Anzahl
             };
 
@@ -486,17 +400,13 @@ public class Start extends CustomFrame{
             }
 
             Warenkorb.setEnabled(true);
-            Pizza.increaseAnzahl(IncreaseAnzahlVal, Index);
+            Pizza[Index].setPreis(IncreaseAnzahlVal);
 
-            BigDecimal Preis = BigDecimal.valueOf(Pizza.getPreise()[Index]);
-            BigDecimal DecimalAnzahl = new BigDecimal(IncreaseAnzahlVal);
-
-            GesamtSumme = GesamtSumme.add(Preis.multiply(DecimalAnzahl));
-            Warenkorb.setText("<html>Zum Warenkorb<br>" + String.valueOf(GesamtSumme).replace(".", ",") + "€</html>");
-            if (!WarenkorbList.contains(Pizza)){
-                WarenkorbList.add(Pizza);
+            if (!Korb.getAllToBuy().contains(Pizza)){
+                Korb.add(Pizza);
             }
 
+            Warenkorb.setText("<html>Zum Warenkorb<br>" + String.valueOf(Korb.getGesamtPreis()).replace(".", ",") + "€</html>");
         }
     }
 
@@ -558,8 +468,8 @@ public class Start extends CustomFrame{
             GesuchtePizzenList = new ArrayList<JPanel>();
 
 
-            for (BetterPizza Pizza : ObjPizzenList) {
-                if (Pizza.getName().substring(5).toLowerCase().contains(SuchEingabe.toLowerCase())){
+            for (Pizza[] Pizza : ObjPizzenList) {
+                if (Pizza[0].getName().substring(5).toLowerCase().contains(SuchEingabe.toLowerCase())){
                     int Index = ObjPizzenList.indexOf(Pizza);
                     GesuchtePizzenList.add(PizzenList.get(Index));
                 }

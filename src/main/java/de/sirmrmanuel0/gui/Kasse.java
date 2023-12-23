@@ -1,8 +1,11 @@
 package de.sirmrmanuel0.gui;
 
-import de.sirmrmanuel0.pizza.BetterPizza;
+import de.sirmrmanuel0.logic.Warenkorb;
+import de.sirmrmanuel0.pizza.Pizza;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,20 +15,20 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Warenkorb extends CustomFrame{
-    protected ArrayList<BetterPizza> WarenListe;
+public class Kasse extends CustomFrame{
+    protected Warenkorb Korb;
     protected JPanel Main;
-    protected BigDecimal GesamtSumme;
+    protected double GesamtSumme;
     protected JScrollPane QuittungScroll;
     protected JPanel QuittungWrapper;
     protected JPanel Quittung;
     protected ArrayList<JPanel> Waren;
     protected JLabel GesamtPreis;
 
-    public Warenkorb(ArrayList<BetterPizza> WarenListe, Point Location, BigDecimal GesammtSumme){
+    public Kasse(Warenkorb Korb, Point Location){
         super(1.5, 1, 1, 1.2, "Pizza Lieferung Deluxe - Warenkorb", false);
-        this.WarenListe = WarenListe;
-        this.GesamtSumme = GesammtSumme;
+        this.Korb = Korb;
+        GesamtSumme = Korb.getGesamtPreis();
         Waren = new ArrayList<JPanel>();
         setBackgroundImage(loadImage("background.jpg"));
         initComponents();
@@ -48,7 +51,7 @@ public class Warenkorb extends CustomFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new Start(WarenListe, getLocation());
+                new Start(Korb, getLocation());
             }
         });
 
@@ -157,8 +160,8 @@ public class Warenkorb extends CustomFrame{
                         "Bis zum nächsten Mal!"
                 };
 
-                JOptionPane.showMessageDialog(Warenkorb.this, message, "Auf Wiedersehen", JOptionPane.INFORMATION_MESSAGE);
-                Warenkorb.this.dispose();
+                JOptionPane.showMessageDialog(Kasse.this, message, "Auf Wiedersehen", JOptionPane.INFORMATION_MESSAGE);
+                Kasse.this.dispose();
             }
         });
 
@@ -219,24 +222,92 @@ public class Warenkorb extends CustomFrame{
 
     protected void initQuittung(){
         boolean EvenChild = false;
-        for (BetterPizza Pizza : WarenListe){
+        for (Pizza[] Pizza : Korb.getAllToBuy()){
             JPanel PizzaWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0 ,0));
             RoundedCornerPanel PizzaPanel = new RoundedCornerPanel(25);
-            RoundedButton DeleteSmall = new RoundedButton( Pizza.getSizes()[0] + "cm entfernen");
-            RoundedButton DeleteMid = new RoundedButton(Pizza.getSizes()[1] + "cm entfernen");
-            RoundedButton DeleteNormal = new RoundedButton(Pizza.getSizes()[2] + "cm entfernen");
-            RoundedButton DeleteBig = new RoundedButton(Pizza.getSizes()[3] + "cm entfernen");
+            RoundedButton DeleteSmall = new RoundedButton( "25 cm entfernen");
+            RoundedButton DeleteMid = new RoundedButton("28 cm entfernen");
+            RoundedButton DeleteNormal = new RoundedButton("32 cm entfernen");
+            RoundedButton DeleteBig = new RoundedButton("38 cm entfernen");
             JPanel Mengen = new JPanel();
-            JLabel MengeKlein = new JLabel("25cm x " + Pizza.getAnzahl()[0] + " x " + String.valueOf(Pizza.getPreise()[0]).replace(".",",") + "€");
-            JLabel MengeMid = new JLabel("28cm x " + Pizza.getAnzahl()[1] + " x " + String.valueOf(Pizza.getPreise()[1]).replace(".",",") + "€");
-            JLabel MengeNormal = new JLabel("32cm x " + Pizza.getAnzahl()[2] + " x " + String.valueOf(Pizza.getPreise()[2]).replace(".",",") + "€");
-            JLabel MengeBig = new JLabel("38cm x " + Pizza.getAnzahl()[3] + " x " + String.valueOf(Pizza.getPreise()[3]).replace(".",",") + "€");
-            JLabel Name = new JLabel(Pizza.getName());
+            JLabel MengeKlein = new JLabel("25cm x " + Pizza[0].toString() + " x " + String.valueOf(Pizza[0].getPreis()).replace(".",",") + "€");
+            JLabel MengeMid = new JLabel("28cm x " + Pizza[1].toString() + " x " + String.valueOf(Pizza[1].getPreis()).replace(".",",") + "€");
+            JLabel MengeNormal = new JLabel("32cm x " + Pizza[2].toString() + " x " + String.valueOf(Pizza[2].getPreis()).replace(".",",") + "€");
+            JLabel MengeBig = new JLabel("38cm x " + Pizza[3].toString() + " x " + String.valueOf(Pizza[3].getPreis()).replace(".",",") + "€");
+            JLabel Name = new JLabel(Pizza[0].getName());
             ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png"));
             JLabel Icon = new JLabel();
             JPanel IconPanel = new JPanel();
             JPanel Schrift = new JPanel();
             JPanel Buttons = new JPanel();
+            JPanel DropDowns = new JPanel(new GridLayout(2,2));
+
+            int lengthSmall = 1;
+            int lengthMid = 1;
+            int lengthNormal = 1;
+            int lengthBig = 1;
+
+            boolean usableSmall = false;
+            boolean usableMid = false;
+            boolean usableNormal = false;
+            boolean usableBig = false;
+
+            if (!Pizza[0].toString().equals("0")){
+                lengthSmall = Integer.parseInt(Pizza[0].toString());
+                usableSmall = true;
+            }
+            if (!Pizza[1].toString().equals("0")){
+                lengthMid = Integer.parseInt(Pizza[1].toString());
+                usableMid = true;
+            }
+            if (!Pizza[2].toString().equals("0")){
+                lengthNormal = Integer.parseInt(Pizza[2].toString());
+                usableNormal = true;
+            }
+            if (!Pizza[3].toString().equals("0")){
+                lengthBig = Integer.parseInt(Pizza[3].toString());
+                usableBig = true;
+            }
+
+            String[] dropArraySmall = new String[lengthSmall];
+            String[] dropArrayMid = new String[lengthMid];
+            String[] dropArrayNormal = new String[lengthNormal];
+            String[] dropArrayBig = new String[lengthBig];
+
+            for (int i = 0; i<lengthSmall; i++){
+                dropArraySmall[i] = String.valueOf(i+1);
+            }
+            for (int i = 0; i<lengthMid; i++){
+                dropArrayMid[i] = String.valueOf(i+1);
+            }
+            for (int i = 0; i<lengthNormal; i++){
+                dropArrayNormal[i] = String.valueOf(i+1);
+            }
+            for (int i = 0; i<lengthBig; i++){
+                dropArrayBig[i] = String.valueOf(i+1);
+            }
+
+
+            JComboBox<String> dropDownSmall = new JComboBox<>(dropArraySmall);
+            JComboBox<String> dropDownMid = new JComboBox<>(dropArrayMid);
+            JComboBox<String> dropDownNormal = new JComboBox<>(dropArrayNormal);
+            JComboBox<String> dropDownBig = new JComboBox<>(dropArrayBig);
+
+            dropDownSmall.setEditable(usableSmall);
+            dropDownMid.setEditable(usableMid);
+            dropDownNormal.setEditable(usableNormal);
+            dropDownBig.setEditable(usableBig);
+
+            dropDownSmall.setEnabled(usableSmall);
+            dropDownMid.setEnabled(usableMid);
+            dropDownNormal.setEnabled(usableNormal);
+            dropDownBig.setEnabled(usableBig);
+
+            dropDownSmall.addPopupMenuListener(new WarenPopUpListener());
+            dropDownMid.addPopupMenuListener(new WarenPopUpListener());
+            dropDownNormal.addPopupMenuListener(new WarenPopUpListener());
+            dropDownBig.addPopupMenuListener(new WarenPopUpListener());
+
 
             Image resizedImage = LogoIcon.getImage();
             resizedImage = resizedImage.getScaledInstance(
@@ -287,21 +358,21 @@ public class Warenkorb extends CustomFrame{
             DeleteNormal.addMouseListener(new Start.PizzenMouseAdapter(!EvenChild));
             DeleteBig.addMouseListener(new Start.PizzenMouseAdapter(!EvenChild));
 
-            DeleteSmall.addActionListener(new WarenActionListener(Pizza, 0, PizzaWrapper));
-            DeleteMid.addActionListener(new WarenActionListener(Pizza,1, PizzaWrapper));
-            DeleteNormal.addActionListener(new WarenActionListener(Pizza,2, PizzaWrapper));
-            DeleteBig.addActionListener(new WarenActionListener(Pizza,3, PizzaWrapper));
+            DeleteSmall.addActionListener(new WarenActionListener(Pizza, 0, PizzaWrapper, dropDownSmall));
+            DeleteMid.addActionListener(new WarenActionListener(Pizza,1, PizzaWrapper, dropDownMid));
+            DeleteNormal.addActionListener(new WarenActionListener(Pizza,2, PizzaWrapper, dropDownNormal));
+            DeleteBig.addActionListener(new WarenActionListener(Pizza,3, PizzaWrapper, dropDownBig));
 
-            if (Pizza.getAnzahl()[0] == 0){
+            if (Pizza[0].toString().equals("0")){
                 DeleteSmall.setEnabled(false);
             }
-            if (Pizza.getAnzahl()[1] == 0){
+            if (Pizza[1].toString().equals("0")){
                 DeleteMid.setEnabled(false);
             }
-            if (Pizza.getAnzahl()[2] == 0){
+            if (Pizza[2].toString().equals("0")){
                 DeleteNormal.setEnabled(false);
             }
-            if (Pizza.getAnzahl()[3] == 0){
+            if (Pizza[3].toString().equals("0")){
                 DeleteBig.setEnabled(false);
             }
 
@@ -321,7 +392,7 @@ public class Warenkorb extends CustomFrame{
             Name.setFont(new Font("SansSerif", Font.BOLD, 20));
             Name.setForeground(Color.WHITE);
 
-            PizzaPanel.setPreferredSize(getScaledDimension(1.1,10));
+            PizzaPanel.setPreferredSize(getScaledDimension(0.9,10));
             IconPanel.setPreferredSize(getScaledDimension(15,14));
             Schrift.setPreferredSize(getScaledDimension(2.4,11));
             Buttons.setPreferredSize(getScaledDimension(2.8,11));
@@ -330,6 +401,11 @@ public class Warenkorb extends CustomFrame{
             Schrift.setLayout(new GridLayout(1,2));
 
             PizzaWrapper.setBackground(new Color(0,0,0,0));
+
+            DropDowns.add(dropDownSmall);
+            DropDowns.add(dropDownMid);
+            DropDowns.add(dropDownNormal);
+            DropDowns.add(dropDownBig);
 
             IconPanel.add(Icon);
 
@@ -348,6 +424,7 @@ public class Warenkorb extends CustomFrame{
 
             PizzaPanel.add(IconPanel);
             PizzaPanel.add(Schrift);
+            PizzaPanel.add(DropDowns);
             PizzaPanel.add(Buttons);
 
             PizzaWrapper.add(PizzaPanel);
@@ -358,46 +435,77 @@ public class Warenkorb extends CustomFrame{
 
 
     protected class WarenActionListener implements ActionListener{
-        protected BetterPizza Pizza;
+        protected Pizza[] Pizza;
         protected int Index;
         protected JPanel PizzaWrapper;
         protected int PizzaIndex;
         protected JPanel Panel;
+        protected JComboBox<String> dropDown;
 
-        WarenActionListener(BetterPizza Pizza, int Index, JPanel PizzaWrapper){
+        WarenActionListener(Pizza[] Pizza, int Index, JPanel PizzaWrapper, JComboBox<String> dropDown){
             this.Index = Index;
             this.Pizza = Pizza;
             this.PizzaWrapper = PizzaWrapper;
-            PizzaIndex = WarenListe.indexOf(Pizza);
+            this.dropDown = dropDown;
+            PizzaIndex = Korb.getAllToBuy().indexOf(Pizza);
             Panel = PizzaWrapper;
         }
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton Source = (JButton) e.getSource();
-            int[] NeueAnzahl = Pizza.getAnzahl();
-            NeueAnzahl[Index] -= 1;
-            Pizza.setAnzahl(NeueAnzahl);
+            int decrement = 0;
 
-            if (Arrays.equals(NeueAnzahl, new int[]{0, 0, 0, 0})){
-                Waren.remove(Panel);
-                WarenListe.remove(Pizza);
+            try{
+                decrement = Integer.parseInt((String) dropDown.getSelectedItem());
+            } catch (NumberFormatException ex){
+                Object[] message = new Object[]{
+                        "Bitte gebe eine echte Zahle ein!",
+                        "Gebe nicht '" + dropDown.getSelectedItem() + "' ein!"
+                };
+
+                JOptionPane.showMessageDialog(Kasse.this, message, "Ungültige Angabe", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
-            GesamtSumme = GesamtSumme.subtract(BigDecimal.valueOf(Pizza.getPreise()[Index]));
+            Pizza[Index].setPreis(-decrement);
 
-            if (WarenListe.isEmpty()){
+            if (Integer.parseInt(Pizza[0].toString()) <= 0
+                    && Integer.parseInt(Pizza[1].toString()) <= 0
+                    && Integer.parseInt(Pizza[2].toString()) <= 0
+                    && Integer.parseInt(Pizza[3].toString()) <= 0){
+                Waren.remove(Panel);
+                Korb.remove(Pizza);
+            }
+
+            if (Korb.getAllToBuy().isEmpty()){
                 Object[] message = {
                         "Schade, dass Sie nichts für sich gefunden haben!",
                         "Bis zum nächsten mal!"
                 };
-                JOptionPane.showMessageDialog(Warenkorb.this, message, "Auf Wiedersehen", JOptionPane.INFORMATION_MESSAGE);
-                Warenkorb.this.dispose();
+                JOptionPane.showMessageDialog(Kasse.this, message, "Auf Wiedersehen", JOptionPane.INFORMATION_MESSAGE);
+                Kasse.this.dispose();
                 return;
             }
 
             Waren = new ArrayList<JPanel>();
-            new Warenkorb(WarenListe, Warenkorb.this.getLocation(), GesamtSumme);
-            Warenkorb.this.dispose();
+            new Kasse(Korb, Kasse.this.getLocation());
+            Kasse.this.dispose();
+        }
+    }
+
+    protected class WarenPopUpListener implements PopupMenuListener{
+
+        @Override
+        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {}
+
+        @Override
+        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+            Kasse.this.repaint();
+        }
+
+        @Override
+        public void popupMenuCanceled(PopupMenuEvent e) {
+            Kasse.this.repaint();
         }
     }
 }

@@ -3,6 +3,9 @@
     <output-path>$PROJECT_DIR$/out/artifacts/PizzaAppExe_jar</output-path>
     <root id="archive" name="PizzaAppExe.jar">
       <element id="module-output" name="PizzaAppExe" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
     </root>
   </artifact>
 </component>

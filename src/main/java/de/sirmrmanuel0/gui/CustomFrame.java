@@ -34,7 +34,7 @@ public class CustomFrame extends JFrame {
      * @param title The title of the frame.
      */
     public CustomFrame(String title) {
-        this(title, false); // Default to non-resizable
+        this(title, true); // Default to resizable
     }
 
     /**
@@ -141,6 +141,11 @@ public class CustomFrame extends JFrame {
             }
         });
     }
+    /**
+     * Sets the background image of the frame.
+     *
+     * @param image The background image.
+     */
     public void setBackgroundImage(Image image) {
         backgroundImage = image;
         setContentPane(new JPanel() {
@@ -152,6 +157,16 @@ public class CustomFrame extends JFrame {
                 g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
         });
+    }
+
+    /**
+     * Loads an image from the specified filename.
+     *
+     * @param filename The filename of the image.
+     * @return         The loaded image.
+     */
+    public Image loadImage(String filename) {
+        return new ImageIcon(getClass().getClassLoader().getResource(filename)).getImage();
     }
 
     // Private helper methods
@@ -223,9 +238,5 @@ public class CustomFrame extends JFrame {
         SwingUtilities.updateComponentTreeUI(this);
 
         setResizable(resizable);
-    }
-
-    protected Image loadImage(String filename) {
-        return new ImageIcon(getClass().getClassLoader().getResource(filename)).getImage();
     }
 }
