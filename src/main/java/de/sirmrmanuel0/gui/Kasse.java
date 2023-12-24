@@ -1,5 +1,8 @@
 package de.sirmrmanuel0.gui;
 
+import de.sirmrmanuel0.gui.custom_components.CustomFrame;
+import de.sirmrmanuel0.gui.custom_components.RoundedButton;
+import de.sirmrmanuel0.gui.custom_components.RoundedCornerPanel;
 import de.sirmrmanuel0.logic.Warenkorb;
 import de.sirmrmanuel0.pizza.Pizza;
 
@@ -11,11 +14,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class Kasse extends CustomFrame{
+public class Kasse extends CustomFrame {
     protected Warenkorb Korb;
     protected JPanel Main;
     protected double GesamtSumme;
@@ -26,7 +27,7 @@ public class Kasse extends CustomFrame{
     protected JLabel GesamtPreis;
 
     public Kasse(Warenkorb Korb, Point Location){
-        super(1.5, 1, 1, 1.2, "Pizza Lieferung Deluxe - Warenkorb", false);
+        super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe - Warenkorb", false);
         this.Korb = Korb;
         GesamtSumme = Korb.getGesamtPreis();
         Waren = new ArrayList<JPanel>();

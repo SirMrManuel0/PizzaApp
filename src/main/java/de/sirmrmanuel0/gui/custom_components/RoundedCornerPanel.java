@@ -1,4 +1,4 @@
-package de.sirmrmanuel0.gui;
+package de.sirmrmanuel0.gui.custom_components;
 
 
 import javax.swing.*;

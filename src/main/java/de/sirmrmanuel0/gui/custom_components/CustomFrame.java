@@ -1,4 +1,4 @@
-package de.sirmrmanuel0.gui;
+package de.sirmrmanuel0.gui.custom_components;
 
 
 import javax.swing.*;
@@ -180,9 +180,10 @@ public class CustomFrame extends JFrame {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension screenSize = toolkit.getScreenSize();
         int screenHeight = (int) screenSize.getHeight();
+        int screenWidth = (int) screenSize.getWidth();
 
         frameHeight = (int) Math.round((screenHeight * heightMultiplier) / heightScale);
-        frameWidth = (int) Math.round((frameHeight * widthMultiplier) / widthScale);
+        frameWidth = (int) Math.round((screenWidth * widthMultiplier) / widthScale);
 
         setTitle(title);
         setSize(new Dimension(frameWidth, frameHeight));

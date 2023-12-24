@@ -1,5 +1,9 @@
 package de.sirmrmanuel0.gui;
 
+import de.sirmrmanuel0.gui.custom_components.CustomFrame;
+import de.sirmrmanuel0.gui.custom_components.PlaceholderTextField;
+import de.sirmrmanuel0.gui.custom_components.RoundedButton;
+import de.sirmrmanuel0.gui.custom_components.RoundedCornerPanel;
 import de.sirmrmanuel0.logic.Warenkorb;
 import de.sirmrmanuel0.pizza.Pizza;
 
@@ -8,10 +12,10 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Start extends CustomFrame{
+public class Start extends CustomFrame {
     protected JPanel Main;
     protected JPanel Pizzen;
     protected JPanel PizzenWrapper;
@@ -21,17 +25,18 @@ public class Start extends CustomFrame{
     protected ArrayList<Pizza[]> ObjPizzenList;
     protected ArrayList<JPanel> GesuchtePizzenList;
     protected Warenkorb Korb;
+    protected JProgressBar progressBar;
+    protected CustomFrame progress;
 
     public Start(){
-        super(1.5, 1, 1, 1.2, "Pizza Lieferung Deluxe", false);
+        super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         Korb = new Warenkorb();
         setBackgroundImage(loadImage("background.jpg"));
         initComponents(true);
-        setVisible(true);
     }
 
     public Start(Warenkorb Korb, Point Location){
-        super(1.5, 1, 1, 1.2, "Pizza Lieferung Deluxe", false);
+        super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         this.Korb = Korb;
         setBackgroundImage(loadImage("background.jpg"));
         initComponents(false);
@@ -189,108 +194,127 @@ public class Start extends CustomFrame{
         PizzenList = new ArrayList<JPanel>();
         GesuchtePizzenList = new ArrayList<JPanel>();
         boolean EvenChild = false;
-        for (int i = 0; i<ObjPizzenList.size(); i++){
-            Pizza[] Pizza = ObjPizzenList.get(i);
-            JPanel PizzaWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0 ,0));
-            RoundedCornerPanel PizzaPanel = new RoundedCornerPanel(25);
-            RoundedButton Small = new RoundedButton( "25 cm " + Pizza[0].getPreis() + "€");
-            RoundedButton Mid = new RoundedButton("28 cm " + Pizza[1].getPreis() + "€");
-            RoundedButton Normal = new RoundedButton("32 cm " + Pizza[2].getPreis() + "€");
-            RoundedButton Big = new RoundedButton("38 cm " + Pizza[3].getPreis() + "€");
-            JLabel Name = new JLabel(Pizza[0].getName());
-            JLabel Beschreibung = new JLabel(Pizza[0].getBeschreibung());
-            ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png"));
-            JLabel Icon = new JLabel();
-            JPanel IconPanel = new JPanel();
-            JPanel Schrift = new JPanel();
-            JPanel Buttons = new JPanel();
 
-            Image resizedImage = LogoIcon.getImage();
-            resizedImage = resizedImage.getScaledInstance(
-                    getWidth() / 15,
-                    getHeight() / 14,
-                    Image.SCALE_SMOOTH
-            );
+        progress = new CustomFrame(1,8, 1, 10, "Lädt...", false);
+        progress.setLayout(new GridLayout(3,1));
 
-            Icon.setIcon(new ImageIcon(resizedImage));
+        JPanel filler = new JPanel();
+        JPanel filler1 = new JPanel();
 
-            if (EvenChild){
-                PizzaPanel.setBackground(new Color(81, 81, 81,250));
-                IconPanel.setBackground(new Color(136, 136, 138,0));
-                Schrift.setBackground(new Color(136, 136, 138,0));
-                Buttons.setBackground(Color.lightGray);
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setStringPainted(true);
 
-                Small.setBackground(Color.lightGray);
-                Mid.setBackground(Color.lightGray);
-                Normal.setBackground(Color.lightGray);
-                Big.setBackground(Color.lightGray);
-                EvenChild = false;
-            } else {
-                PizzaPanel.setBackground(new Color(136, 136, 136,250));
-                IconPanel.setBackground(new Color(136, 136, 138,0));
-                Schrift.setBackground(new Color(136, 136, 138,0));
-                Buttons.setBackground(Color.WHITE);
+        progress.add(filler);
+        progress.add(progressBar);
+        progress.add(filler1);
 
-                Small.setBackground(Color.WHITE);
-                Mid.setBackground(Color.WHITE);
-                Normal.setBackground(Color.WHITE);
-                Big.setBackground(Color.WHITE);
-                EvenChild = true;
-            }
+        MySwingWorker worker = new MySwingWorker();
+        worker.execute();
 
+        progress.setVisible(true);
+    }
 
-            Small.setFocusPainted(false);
-            Mid.setFocusPainted(false);
-            Normal.setFocusPainted(false);
-            Big.setFocusPainted(false);
+    protected void load(int Index){
+        boolean EvenChild = (Index+1) % 2 == 0;
+        Pizza[] Pizza = ObjPizzenList.get(Index);
+        JPanel PizzaWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0 ,0));
+        RoundedCornerPanel PizzaPanel = new RoundedCornerPanel(25);
+        RoundedButton Small = new RoundedButton( "25 cm " + Pizza[0].getPreis() + "€");
+        RoundedButton Mid = new RoundedButton("28 cm " + Pizza[1].getPreis() + "€");
+        RoundedButton Normal = new RoundedButton("32 cm " + Pizza[2].getPreis() + "€");
+        RoundedButton Big = new RoundedButton("38 cm " + Pizza[3].getPreis() + "€");
+        JLabel Name = new JLabel(Pizza[0].getName());
+        JLabel Beschreibung = new JLabel(Pizza[0].getBeschreibung());
+        ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png"));
+        JLabel Icon = new JLabel();
+        JPanel IconPanel = new JPanel();
+        JPanel Schrift = new JPanel();
+        JPanel Buttons = new JPanel();
 
-            Small.setBorderPainted(false);
-            Mid.setBorderPainted(false);
-            Normal.setBorderPainted(false);
-            Big.setBorderPainted(false);
+        Image resizedImage = LogoIcon.getImage();
+        resizedImage = resizedImage.getScaledInstance(
+                getWidth() / 15,
+                getHeight() / 14,
+                Image.SCALE_SMOOTH
+        );
 
-            Small.addMouseListener(new PizzenMouseAdapter(!EvenChild));
-            Mid.addMouseListener(new PizzenMouseAdapter(!EvenChild));
-            Normal.addMouseListener(new PizzenMouseAdapter(!EvenChild));
-            Big.addMouseListener(new PizzenMouseAdapter(!EvenChild));
+        Icon.setIcon(new ImageIcon(resizedImage));
 
-            Small.addActionListener(new PizzenActionListener(0, Pizza));
-            Mid.addActionListener(new PizzenActionListener(1, Pizza));
-            Normal.addActionListener(new PizzenActionListener(2, Pizza));
-            Big.addActionListener(new PizzenActionListener(3, Pizza));
+        if (EvenChild){
+            PizzaPanel.setBackground(new Color(81, 81, 81,250));
+            IconPanel.setBackground(new Color(136, 136, 138,0));
+            Schrift.setBackground(new Color(136, 136, 138,0));
+            Buttons.setBackground(Color.lightGray);
 
+            Small.setBackground(Color.lightGray);
+            Mid.setBackground(Color.lightGray);
+            Normal.setBackground(Color.lightGray);
+            Big.setBackground(Color.lightGray);
+            EvenChild = false;
+        } else {
+            PizzaPanel.setBackground(new Color(136, 136, 136,250));
+            IconPanel.setBackground(new Color(136, 136, 138,0));
+            Schrift.setBackground(new Color(136, 136, 138,0));
+            Buttons.setBackground(Color.WHITE);
 
-            Name.setFont(new Font("SansSerif", Font.BOLD, 20));
-            Beschreibung.setFont(new Font("SansSerif", Font.PLAIN, 12));
-            Beschreibung.setForeground(Color.WHITE);
-            Name.setForeground(Color.WHITE);
-
-            PizzaPanel.setPreferredSize(getScaledDimension(1.1,10));
-            IconPanel.setPreferredSize(getScaledDimension(15,14));
-            Schrift.setPreferredSize(getScaledDimension(2.4,11));
-            Buttons.setPreferredSize(getScaledDimension(2.8,11));
-
-            Buttons.setLayout(new GridLayout(2,2));
-            Schrift.setLayout(new GridLayout(2,1));
-
-            PizzaWrapper.setBackground(new Color(0,0,0,0));
-
-            IconPanel.add(Icon);
-            Schrift.add(Name);
-            Schrift.add(Beschreibung);
-            Buttons.add(Small);
-            Buttons.add(Mid);
-            Buttons.add(Normal);
-            Buttons.add(Big);
-            PizzaPanel.add(IconPanel);
-            PizzaPanel.add(Schrift);
-            PizzaPanel.add(Buttons);
-            PizzaWrapper.add(PizzaPanel);
-            Pizzen.add(PizzaWrapper);
-            PizzenList.add(PizzaWrapper);
-            Korb.addAllPossiblePanel(PizzaWrapper);
+            Small.setBackground(Color.WHITE);
+            Mid.setBackground(Color.WHITE);
+            Normal.setBackground(Color.WHITE);
+            Big.setBackground(Color.WHITE);
+            EvenChild = true;
         }
 
+
+        Small.setFocusPainted(false);
+        Mid.setFocusPainted(false);
+        Normal.setFocusPainted(false);
+        Big.setFocusPainted(false);
+
+        Small.setBorderPainted(false);
+        Mid.setBorderPainted(false);
+        Normal.setBorderPainted(false);
+        Big.setBorderPainted(false);
+
+        Small.addMouseListener(new PizzenMouseAdapter(!EvenChild));
+        Mid.addMouseListener(new PizzenMouseAdapter(!EvenChild));
+        Normal.addMouseListener(new PizzenMouseAdapter(!EvenChild));
+        Big.addMouseListener(new PizzenMouseAdapter(!EvenChild));
+
+        Small.addActionListener(new PizzenActionListener(0, Pizza));
+        Mid.addActionListener(new PizzenActionListener(1, Pizza));
+        Normal.addActionListener(new PizzenActionListener(2, Pizza));
+        Big.addActionListener(new PizzenActionListener(3, Pizza));
+
+
+        Name.setFont(new Font("SansSerif", Font.BOLD, 20));
+        Beschreibung.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        Beschreibung.setForeground(Color.WHITE);
+        Name.setForeground(Color.WHITE);
+
+        PizzaPanel.setPreferredSize(getScaledDimension(1.1,10));
+        IconPanel.setPreferredSize(getScaledDimension(15,14));
+        Schrift.setPreferredSize(getScaledDimension(2.4,11));
+        Buttons.setPreferredSize(getScaledDimension(2.8,11));
+
+        Buttons.setLayout(new GridLayout(2,2));
+        Schrift.setLayout(new GridLayout(2,1));
+
+        PizzaWrapper.setBackground(new Color(0,0,0,0));
+
+        IconPanel.add(Icon);
+        Schrift.add(Name);
+        Schrift.add(Beschreibung);
+        Buttons.add(Small);
+        Buttons.add(Mid);
+        Buttons.add(Normal);
+        Buttons.add(Big);
+        PizzaPanel.add(IconPanel);
+        PizzaPanel.add(Schrift);
+        PizzaPanel.add(Buttons);
+        PizzaWrapper.add(PizzaPanel);
+        Pizzen.add(PizzaWrapper);
+        PizzenList.add(PizzaWrapper);
+        Korb.addAllPossiblePanel(PizzaWrapper);
     }
 
 
@@ -520,5 +544,36 @@ public class Start extends CustomFrame{
         public void keyReleased(KeyEvent e) {}
     }
 
+    protected class MySwingWorker extends SwingWorker<Void, Integer> {
 
+        @Override
+        protected Void doInBackground() throws Exception {
+            // Simulate time-consuming task
+            int totalTasks = Korb.getAllPossible().size();
+            for (int i = 0; i < totalTasks; i++) {
+                // Perform your initialization task here
+                load(i);
+
+                // Update progress
+                int progress = (int) ((i / (double) totalTasks) * 100);
+                publish(progress);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void process(List<Integer> chunks) {
+            // Update the progress bar while the background task is running
+            for (Integer progress : chunks) {
+                progressBar.setValue(progress);
+            }
+        }
+
+        @Override
+        protected void done() {
+            progress.dispose();
+            Start.this.setVisible(true);
+        }
+    }
 }

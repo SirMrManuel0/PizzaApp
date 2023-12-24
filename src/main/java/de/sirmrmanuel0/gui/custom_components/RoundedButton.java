@@ -1,11 +1,11 @@
-package de.sirmrmanuel0.gui;
+package de.sirmrmanuel0.gui.custom_components;
 
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
-class RoundedButton extends JButton {
+public class RoundedButton extends JButton {
 
     public RoundedButton(String text) {
         super(text);
