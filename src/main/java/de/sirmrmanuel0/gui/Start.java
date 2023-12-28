@@ -1,9 +1,6 @@
 package de.sirmrmanuel0.gui;
 
-import de.sirmrmanuel0.gui.custom_components.CustomFrame;
-import de.sirmrmanuel0.gui.custom_components.PlaceholderTextField;
-import de.sirmrmanuel0.gui.custom_components.RoundedButton;
-import de.sirmrmanuel0.gui.custom_components.RoundedCornerPanel;
+import de.sirmrmanuel0.gui.custom_components.*;
 import de.sirmrmanuel0.logic.Warenkorb;
 import de.sirmrmanuel0.pizza.Pizza;
 
@@ -40,7 +37,7 @@ public class Start extends CustomFrame {
         this.Korb = Korb;
         setBackgroundImage(loadImage("background.jpg"));
         initComponents(false);
-        Warenkorb.setText("<html>Zum Warenkorb<br>" + String.valueOf(Korb.getGesamtPreis()).replace(".", ",") + "€</html>");
+        Warenkorb.setText("<html><center>Zum Warenkorb<br>" + String.valueOf(this.Korb.getGesamtPreis()).replace(".", ",") + "€</center></html>");
         Warenkorb.setEnabled(true);
         setLocation(Location);
         setVisible(true);
@@ -154,7 +151,8 @@ public class Start extends CustomFrame {
         if (boolInitPizzen){
             initPizzen();
         } else {
-            for (JPanel panel : Korb.getAllPossiblePanel()){
+            for (UpdaterPanel panel : Korb.getAllPossiblePanel()){
+                panel.updateAll(Korb, Warenkorb, this);
                 Pizzen.add(panel);
             }
         }
@@ -191,8 +189,8 @@ public class Start extends CustomFrame {
 
     protected void initPizzen(){
         ObjPizzenList = Korb.getAllPossibleInstances();
-        PizzenList = new ArrayList<JPanel>();
-        GesuchtePizzenList = new ArrayList<JPanel>();
+        PizzenList = new ArrayList<>();
+        GesuchtePizzenList = new ArrayList<>();
         boolean EvenChild = false;
 
         progress = new CustomFrame(1,8, 1, 10, "Lädt...", false);
@@ -217,7 +215,7 @@ public class Start extends CustomFrame {
     protected void load(int Index){
         boolean EvenChild = (Index+1) % 2 == 0;
         Pizza[] Pizza = ObjPizzenList.get(Index);
-        JPanel PizzaWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0 ,0));
+        UpdaterPanel PizzaWrapper = new UpdaterPanel(new FlowLayout(FlowLayout.CENTER, 0 ,0));
         RoundedCornerPanel PizzaPanel = new RoundedCornerPanel(25);
         RoundedButton Small = new RoundedButton( "25 cm " + Pizza[0].getPreis() + "€");
         RoundedButton Mid = new RoundedButton("28 cm " + Pizza[1].getPreis() + "€");
@@ -280,10 +278,15 @@ public class Start extends CustomFrame {
         Normal.addMouseListener(new PizzenMouseAdapter(!EvenChild));
         Big.addMouseListener(new PizzenMouseAdapter(!EvenChild));
 
-        Small.addActionListener(new PizzenActionListener(0, Pizza));
-        Mid.addActionListener(new PizzenActionListener(1, Pizza));
-        Normal.addActionListener(new PizzenActionListener(2, Pizza));
-        Big.addActionListener(new PizzenActionListener(3, Pizza));
+        Small.addActionListener(new PizzenActionListener(0, Pizza, Korb, Warenkorb, this));
+        Mid.addActionListener(new PizzenActionListener(1, Pizza, Korb, Warenkorb, this));
+        Normal.addActionListener(new PizzenActionListener(2, Pizza, Korb, Warenkorb, this));
+        Big.addActionListener(new PizzenActionListener(3, Pizza, Korb, Warenkorb, this));
+
+        PizzaWrapper.addToUpdate(Small);
+        PizzaWrapper.addToUpdate(Mid);
+        PizzaWrapper.addToUpdate(Normal);
+        PizzaWrapper.addToUpdate(Big);
 
 
         Name.setFont(new Font("SansSerif", Font.BOLD, 20));
@@ -352,13 +355,25 @@ public class Start extends CustomFrame {
         }
     }
 
-    protected class PizzenActionListener implements ActionListener{
+    public static class PizzenActionListener implements ActionListener{
         protected int Index;
         protected Pizza[] Pizza;
+        protected Warenkorb actionWarenkorb;
+        protected JButton actionWarenkorbButton;
+        protected CustomFrame parent;
 
-        public PizzenActionListener(int Index, Pizza[] Pizza){
+        public PizzenActionListener(int Index, Pizza[] Pizza, Warenkorb actionWarenkorb, JButton Warenkorb, CustomFrame parent){
+            this.parent = parent;
+            this.actionWarenkorbButton = Warenkorb;
+            this.actionWarenkorb = actionWarenkorb;
             this.Index = Index;
             this.Pizza = Pizza;
+        }
+
+        public void updateListener(Warenkorb actionWarenkorb, JButton Warenkorb, CustomFrame parent){
+            this.parent = parent;
+            this.actionWarenkorb = actionWarenkorb;
+            this.actionWarenkorbButton = Warenkorb;
         }
 
         @Override
@@ -395,7 +410,7 @@ public class Start extends CustomFrame {
 
 
             int option = JOptionPane.showConfirmDialog(
-                    Start.this,
+                    parent,
                     message,
                     Name + " Kaufen",
                     JOptionPane.OK_CANCEL_OPTION
@@ -415,7 +430,7 @@ public class Start extends CustomFrame {
 
             } catch (NumberFormatException ex){
                 JOptionPane.showMessageDialog(
-                        Start.this,
+                        parent,
                         "Ungültige Eingabe für Anzahl. Bitte geben Sie eine gültige Zahl ein.",
                         "Fehler",
                         JOptionPane.ERROR_MESSAGE
@@ -423,14 +438,14 @@ public class Start extends CustomFrame {
                 return;
             }
 
-            Warenkorb.setEnabled(true);
+            actionWarenkorbButton.setEnabled(true);
             Pizza[Index].setPreis(IncreaseAnzahlVal);
 
-            if (!Korb.getAllToBuy().contains(Pizza)){
-                Korb.add(Pizza);
+            if (!actionWarenkorb.getAllToBuy().contains(Pizza)){
+                actionWarenkorb.add(Pizza);
             }
 
-            Warenkorb.setText("<html>Zum Warenkorb<br>" + String.valueOf(Korb.getGesamtPreis()).replace(".", ",") + "€</html>");
+            actionWarenkorbButton.setText("<html><center>Zum Warenkorb<br>" + String.valueOf(actionWarenkorb.getGesamtPreis()).replace(".", ",") + "€</center></html>");
         }
     }
 

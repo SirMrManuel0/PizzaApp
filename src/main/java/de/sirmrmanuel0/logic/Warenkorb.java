@@ -1,5 +1,6 @@
 package de.sirmrmanuel0.logic;
 
+import de.sirmrmanuel0.gui.custom_components.UpdaterPanel;
 import de.sirmrmanuel0.pizza.Pizza;
 
 import javax.swing.*;
@@ -17,10 +18,12 @@ import java.util.zip.ZipInputStream;
 public class Warenkorb {
     protected ArrayList<Constructor[]> AllPossible;
     protected ArrayList<Pizza[]> AllPossibleInstances;
-    protected ArrayList<JPanel> AllPossiblePanel;
+    protected ArrayList<UpdaterPanel> AllPossiblePanel;
     protected ArrayList<Pizza[]> AllToBuy;
+    protected ArrayList<Object[]> Rabatte;
 
     public Warenkorb(){
+        Rabatte = new ArrayList<>();
         AllPossible = new ArrayList<>();
         AllPossiblePanel = new ArrayList<>();
         AllToBuy = new ArrayList<>();
@@ -43,17 +46,18 @@ public class Warenkorb {
         }
     }
 
-    public void setAllPossiblePanel(ArrayList<JPanel> panels) {AllPossiblePanel = panels;};
-    public void addAllPossiblePanel(JPanel panel){AllPossiblePanel.add(panel);}
+    public void setAllPossiblePanel(ArrayList<UpdaterPanel> panels) {AllPossiblePanel = panels;};
+    public void addAllPossiblePanel(UpdaterPanel panel){AllPossiblePanel.add(panel);}
     public void add(Pizza[] pizza){AllToBuy.add(pizza);}
     public void remove(Pizza[] pizza){AllToBuy.remove(pizza);}
     public void remove(int index){AllToBuy.remove(index);}
+    public void addRabatt(String Grund, double rabatt){Rabatte.add(new Object[]{Grund, new BigDecimal(rabatt)});}
     public ArrayList<Pizza[]> getAllToBuy(){return AllToBuy;}
     public ArrayList<Constructor[]> getAllPossible(){return AllPossible;}
     public ArrayList<Pizza[]> getAllPossibleInstances(){return AllPossibleInstances;}
-    public ArrayList<JPanel> getAllPossiblePanel(){return AllPossiblePanel;}
+    public ArrayList<UpdaterPanel> getAllPossiblePanel(){return AllPossiblePanel;}
+    public ArrayList<Object[]> getRabatte(){return Rabatte;}
     public double getGesamtPreis(){
-
         BigDecimal GesamtPreis = new BigDecimal(0);
 
         for (Pizza[] pizza : AllToBuy){
@@ -61,9 +65,32 @@ public class Warenkorb {
                 GesamtPreis = GesamtPreis.add(new BigDecimal(pizza[i].getPreis()).multiply(new BigDecimal(pizza[i].toString())));
             }
         }
+
+        if (!Rabatte.isEmpty()){
+            for (Object[] val : Rabatte){
+                GesamtPreis = GesamtPreis.subtract((BigDecimal) val[1]);
+            }
+        }
+
         double gesamt = GesamtPreis.doubleValue();
         gesamt = (double) Math.round(gesamt * 100) / 100;
-        String gesamtStr = String.valueOf((int) gesamt * 100);
+        String gesamtStr = String.valueOf((int) (gesamt * 100));
+        gesamt = Double.parseDouble(gesamtStr.substring(0, gesamtStr.length()-2) + "." + gesamtStr.substring(gesamtStr.length()-2));
+
+        return gesamt;
+    }
+    public double getGesamtPreisOhneRabatt(){
+        BigDecimal GesamtPreis = new BigDecimal(0);
+
+        for (Pizza[] pizza : AllToBuy){
+            for (int i = 0; i<4; i++){
+                GesamtPreis = GesamtPreis.add(new BigDecimal(pizza[i].getPreis()).multiply(new BigDecimal(pizza[i].toString())));
+            }
+        }
+
+        double gesamt = GesamtPreis.doubleValue();
+        gesamt = (double) Math.round(gesamt * 100) / 100;
+        String gesamtStr = String.valueOf((int) (gesamt * 100));
         gesamt = Double.parseDouble(gesamtStr.substring(0, gesamtStr.length()-2) + "." + gesamtStr.substring(gesamtStr.length()-2));
 
         return gesamt;

@@ -3,6 +3,9 @@ package de.sirmrmanuel0.gui;
 import de.sirmrmanuel0.gui.custom_components.CustomFrame;
 import de.sirmrmanuel0.gui.custom_components.RoundedButton;
 import de.sirmrmanuel0.gui.custom_components.RoundedCornerPanel;
+import de.sirmrmanuel0.gui.snake.GameOverObserver;
+import de.sirmrmanuel0.gui.snake.Snake;
+import de.sirmrmanuel0.gui.snake.SnakePanel;
 import de.sirmrmanuel0.logic.Warenkorb;
 import de.sirmrmanuel0.pizza.Pizza;
 
@@ -14,9 +17,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class Kasse extends CustomFrame {
+public class Kasse extends CustomFrame implements GameOverObserver {
     protected Warenkorb Korb;
     protected JPanel Main;
     protected double GesamtSumme;
@@ -25,6 +29,8 @@ public class Kasse extends CustomFrame {
     protected JPanel Quittung;
     protected ArrayList<JPanel> Waren;
     protected JLabel GesamtPreis;
+    protected SnakePanel RabattPanel;
+    protected Snake snake;
 
     public Kasse(Warenkorb Korb, Point Location){
         super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe - Warenkorb", false);
@@ -33,6 +39,8 @@ public class Kasse extends CustomFrame {
         Waren = new ArrayList<JPanel>();
         setBackgroundImage(loadImage("background.jpg"));
         initComponents();
+        if (!Korb.getRabatte().isEmpty())
+            rabatt();
         setLocation(Location);
         setVisible(true);
     }
@@ -133,9 +141,10 @@ public class Kasse extends CustomFrame {
         JPanel Bezahlen = new JPanel();
         JPanel BezahlenButtonPanel = new JPanel(new GridLayout(3,1));
         JPanel Filler1 = new JPanel();
-        JPanel Filler2 = new JPanel();
+        JButton RabattSpielButton = new JButton("<html><center>Rabatt-Spiel Snake<br>Sparen Sie 1 Euro pro 100 Punkte</center></html>");
         JPanel GesamtPreisPanel = new JPanel(new GridBagLayout());
         JButton BezahlenButton = new JButton("Bezahlen");
+        JPanel GesamtPreisWrapper = new JPanel();
 
         Bezahlen.setLayout(new GridLayout(2,1));
         Bezahlen.setBackground(new Color(0,0,0,0));
@@ -144,13 +153,18 @@ public class Kasse extends CustomFrame {
         GesamtPreis.setFont(new Font("SansSerif", Font.BOLD, 25));
 
         Filler1.setBackground(new Color(0,0,0,0));
-        Filler2.setBackground(new Color(0,0,0,0));
         BezahlenButtonPanel.setBackground(new Color(0,0,0,0));
         GesamtPreisPanel.setBackground(new Color(0,0,0,90));
+        GesamtPreisWrapper.setBackground(new Color(0,0,0,0));
 
         BezahlenButton.setBackground(Color.BLACK);
         BezahlenButton.setForeground(Color.WHITE);
         BezahlenButton.setFocusPainted(false);
+
+        RabattSpielButton.setBackground(Color.BLACK);
+        RabattSpielButton.setForeground(Color.WHITE);
+        RabattSpielButton.setFocusPainted(false);
+        RabattSpielButton.addActionListener(new RabattSpielActionListener());
 
 
         BezahlenButton.addActionListener(new ActionListener() {
@@ -177,19 +191,9 @@ public class Kasse extends CustomFrame {
         QuittungScroll = new JScrollPane(Quittung);
         QuittungScroll.setBackground(new Color(0,0,0,0));
 
-        QuittungScroll.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-            @Override
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                repaint();
-            }
-        });
+        QuittungScroll.getVerticalScrollBar().addAdjustmentListener(new ScrollAdjustmentListener());
 
-        QuittungScroll.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-            @Override
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                repaint();
-            }
-        });
+        QuittungScroll.getHorizontalScrollBar().addAdjustmentListener(new ScrollAdjustmentListener());
 
         JScrollBar verticalScrollBar = QuittungScroll.getVerticalScrollBar();
         verticalScrollBar.setUnitIncrement(20);
@@ -203,7 +207,7 @@ public class Kasse extends CustomFrame {
         QuittungWrapper.add(QuittungScroll);
 
         BezahlenButtonPanel.add(Filler1);
-        BezahlenButtonPanel.add(Filler2);
+        BezahlenButtonPanel.add(RabattSpielButton);
         BezahlenButtonPanel.add(BezahlenButton);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -212,9 +216,20 @@ public class Kasse extends CustomFrame {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        GesamtPreisPanel.add(GesamtPreis, gbc);
 
-        Bezahlen.add(GesamtPreisPanel);
+        GesamtPreisWrapper.add(GesamtPreis);
+        GesamtPreisPanel.add(GesamtPreisWrapper, gbc);
+
+        JScrollPane GesamtPreisScroll = new JScrollPane(GesamtPreisPanel);
+        GesamtPreisScroll.setBackground(new Color(0,0,0,0));
+        JScrollBar VerticalBar = GesamtPreisScroll.getVerticalScrollBar();
+        VerticalBar.addAdjustmentListener(new ScrollAdjustmentListener());
+
+        JScrollBar HorizontalBar = GesamtPreisScroll.getHorizontalScrollBar();
+        HorizontalBar.addAdjustmentListener(new ScrollAdjustmentListener());
+
+
+        Bezahlen.add(GesamtPreisScroll);
         Bezahlen.add(BezahlenButtonPanel);
 
         Main.add(QuittungWrapper);
@@ -434,6 +449,56 @@ public class Kasse extends CustomFrame {
         }
     }
 
+    protected void rabatt(){
+        GesamtPreis.setText("<html><center>"
+                + String.valueOf(Korb.getGesamtPreisOhneRabatt()).replace(".",",") + "€<br>");
+        for (Object[] val : Korb.getRabatte()){
+            BigDecimal rabattBig = (BigDecimal) val[1];
+            double tempRabatt = rabattBig.doubleValue();
+            tempRabatt = (double) Math.round(tempRabatt * 100) / 100;
+            String rabattStr = String.valueOf((int) (tempRabatt * 100));
+
+            switch (rabattStr.length()){
+                case 1:
+                    rabattStr = "00" + rabattStr;
+                    break;
+                case 2:
+                    rabattStr = "0" + rabattStr;
+            }
+
+
+            tempRabatt = Double.parseDouble(rabattStr.substring(0, rabattStr.length()-2) + "." + rabattStr.substring(rabattStr.length()-2));
+
+            GesamtPreis.setText(GesamtPreis.getText() + "<font color='red' size='5' bgcolor='black'>- "
+                    + String.valueOf(tempRabatt).replace(".",",") + "€"
+                    + " " + (String) val[0] + "</font><br>");
+        }
+        GesamtSumme = Korb.getGesamtPreis();
+        GesamtPreis.setText(GesamtPreis.getText() + "Summe: " + String.valueOf(GesamtSumme).replace(".",",") + "€" + "</center></html>");
+        repaint();
+    }
+
+    @Override
+    public void onGameOver(int score) {
+        Korb.addRabatt("Rabatt-Spiel Snake", (double) score / 100);
+        rabatt();
+    }
+
+    @Override
+    public void toClose() {
+        snake.dispose();
+    }
+
+
+    protected class RabattSpielActionListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            RabattPanel = new SnakePanel();
+            RabattPanel.addObserver(Kasse.this);
+            snake = new Snake(RabattPanel);
+        }
+    }
 
     protected class WarenActionListener implements ActionListener{
         protected Pizza[] Pizza;
@@ -506,6 +571,14 @@ public class Kasse extends CustomFrame {
 
         @Override
         public void popupMenuCanceled(PopupMenuEvent e) {
+            Kasse.this.repaint();
+        }
+    }
+
+    protected class ScrollAdjustmentListener implements AdjustmentListener{
+
+        @Override
+        public void adjustmentValueChanged(AdjustmentEvent e) {
             Kasse.this.repaint();
         }
     }
