@@ -18,7 +18,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 
 public class Kasse extends CustomFrame implements GameOverObserver {
     protected Warenkorb Korb;
@@ -201,18 +204,7 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         RabattSpielButton.addActionListener(new RabattSpielActionListener());
 
         // ActionListener für BezahlenButton hinzufügen
-        BezahlenButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Aktion beim Klicken des Bezahlen-Buttons: Dankesnachricht anzeigen und Fenster schließen
-                Object[] message = {
-                        "Danke für ihre Bestellung von " + String.valueOf(GesamtSumme).replace(".",",") + "€!",
-                        "Bis zum nächsten Mal!"
-                };
-                JOptionPane.showMessageDialog(Kasse.this, message, "Auf Wiedersehen", JOptionPane.INFORMATION_MESSAGE);
-                Kasse.this.dispose();
-            }
-        });
+        BezahlenButton.addActionListener(new BezahlenActionListener());
 
         // initQuittung-Methode aufrufen, um das Quittung-Panel zu initialisieren
         initQuittung();
@@ -601,7 +593,6 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         snake.dispose();
     }
 
-
     /**
      * ActionListener für das Rabatt-Spiel Snake.
      */
@@ -724,6 +715,136 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         @Override
         public void adjustmentValueChanged(AdjustmentEvent e) {
             Kasse.this.repaint();
+        }
+    }
+
+    /**
+     * ActionListener für den Bezahlen-Button.
+     */
+    protected class BezahlenActionListener implements ActionListener{
+
+        /**
+         * Aktion, die beim Klicken auf den Bezahlen-Button ausgelöst wird.
+         * @param e ActionEvent, das die Aktion ausgelöst hat
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Nachricht für die Bestellbestätigung
+            Object[] message = {
+                    "Danke für ihre Bestellung von " + String.valueOf(GesamtSumme).replace(".",",") + "€!",
+                    "Bis zum nächsten Mal!",
+                    "Wollen Sie eine Quittung?"
+            };
+            int option = JOptionPane.showConfirmDialog(Kasse.this, message, "Auf Wiedersehen", JOptionPane.YES_NO_OPTION);
+
+            if (option == JOptionPane.YES_OPTION){
+                // Erstellen der Quittung
+                JTextArea Area = new JTextArea();
+                Area.setEditable(false);
+
+                // Aktuelles Datum und Uhrzeit abrufen
+                LocalDate aktuellesDatum = LocalDate.now();
+                LocalTime aktuelleUhrzeit = LocalTime.now();
+
+                // Formatierung des Datums
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                String formatiertesDatum = aktuellesDatum.format(dateFormatter);
+
+                // Formatierung der Uhrzeit
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                String formatierteUhrzeit = aktuelleUhrzeit.format(timeFormatter);
+
+                // Quittung erstellen
+                Area.setText("----------------------------------------------------------\n"
+                            + "                       QUITTUNG\n"
+                            + "----------------------------------------------------------\n"
+                            + "\n"
+                            + "Datum: " + formatiertesDatum + "\n"
+                            + "Uhrzeit: " + formatierteUhrzeit + "\n"
+                            + "\n"
+                            + "----------------------------------------------------------\n"
+                            + "\n"
+                            + "Artikel                  Menge    Preis    Gesamt\n"
+                            + "----------------------------------------------------------\n");
+
+                for (Pizza[] Pizzen : Korb.getAllToBuy()){
+                    // Für jede Pizza-Größe in der Bestellung
+                    Pizza Small = Pizzen[0];
+                    Pizza Mid = Pizzen[1];
+                    Pizza Normal = Pizzen[2];
+                    Pizza Big = Pizzen[3];
+
+                    // Informationen zu jeder Pizza in die Quittung einfügen
+                    if (!Small.toString().equals("0")){
+                        Area.setText(Area.getText()
+                                + Small.getName() + " 25 cm | " + Small.toString() + " | " + String.valueOf(Small.getPreis()).replace(".",",")
+                                + "€ | "
+                                + String.valueOf((double) Math.round((Double.parseDouble(Small.toString()) * Small.getPreis()) * 100) / 100).replace(".",",")
+                                + "€\n");
+                    }
+                    if (!Mid.toString().equals("0")){
+                        Area.setText(Area.getText()
+                                + Mid.getName() + " 28 cm | " + Mid.toString() + " | " + String.valueOf(Mid.getPreis()).replace(".",",")
+                                + "€ | "
+                                + String.valueOf((double) Math.round((Double.parseDouble(Mid.toString()) * Mid.getPreis()) * 100) / 100).replace(".",",")
+                                + "€\n");
+                    }
+                    if (!Normal.toString().equals("0")){
+                        Area.setText(Area.getText()
+                                + Normal.getName() + " 32 cm | " + Normal.toString() + " | " + String.valueOf(Normal.getPreis()).replace(".",",")
+                                + "€ | "
+                                + String.valueOf((double) Math.round((Double.parseDouble(Normal.toString()) * Normal.getPreis()) * 100) / 100).replace(".",",")
+                                + "€\n");
+                    }
+                    if (!Big.toString().equals("0")){
+                        Area.setText(Area.getText()
+                                + Big.getName() + " 38 cm | " + Big.toString() + " | " + String.valueOf(Big.getPreis()).replace(".",",")
+                                + "€ | "
+                                + String.valueOf((double) Math.round((Double.parseDouble(Big.toString()) * Big.getPreis()) * 100) / 100).replace(".",",")
+                                + "€\n");
+                    }
+                }
+
+                Area.setText(Area.getText()
+                        + "----------------------------------------------------------\n"
+                        + "\n"
+                        + "Zwischensumme: " + String.valueOf(Korb.getGesamtPreisOhneRabatt()).replace(".",",") + "€\n");
+
+                if (!Korb.getRabatte().isEmpty()){
+                    // Rabatte hinzufügen, wenn vorhanden
+                    Area.setText(Area.getText()
+                            + "\n"
+                            + "----------------------------------------------------------\n"
+                            + "\n"
+                            + "Rabatte\n"
+                            + "----------------------------------------------------------\n");
+                    for (Object[] rabatt : Korb.getRabatte()){
+                        String Grund = (String) rabatt[0];
+                        String Abzug =  String.valueOf((double) Math.round(Double.parseDouble(rabatt[1].toString()) * 100)/100).replace(".",",");
+
+                        Area.setText(Area.getText()
+                                + Grund + ": "
+                                + Abzug + "€\n");
+                    }
+
+                    Area.setText(Area.getText()
+                            + "----------------------------------------------------------\n\n");
+                } else {
+                    Area.setText(Area.getText() + "Keine Rabatte!\n");
+                }
+
+                Area.setText(Area.getText()
+                        + "Gesamt: " + String.valueOf(Korb.getGesamtPreis()).replace(".",",") + "€\n\n"
+                        + "Vielen Dank für Ihren Einkauf!\n\n"
+                        + "----------------------------------------------------------");
+
+                // Quittung in einem JScrollPane anzeigen
+                JScrollPane FieldScrollPane = new JScrollPane(Area);
+                FieldScrollPane.setPreferredSize(new Dimension(310,400));
+                Object[] Quittung = {FieldScrollPane};
+                JOptionPane.showMessageDialog(Kasse.this, Quittung, "Quittung", JOptionPane.PLAIN_MESSAGE);
+            }
+            Kasse.this.dispose();
         }
     }
 }

@@ -22,7 +22,7 @@ public class SnakePanel extends JPanel implements ActionListener {
     protected int score = 0;
     protected int appleX;
     protected int appleY;
-    protected int timeTillClosing = 10;
+    protected int timeTillClosing = 3;
     protected char direction = 'R';
     protected boolean running = false;
     protected Timer timer;
@@ -258,7 +258,7 @@ public class SnakePanel extends JPanel implements ActionListener {
                 GAME_HEIGHT/2 + (gameOverFont.getSize() + g.getFont().getSize()));
 
         // Benachrichtigung der Observer über das Game Over-Ereignis.
-        if ((!observers.isEmpty()) && (timeTillClosing == 10))
+        if ((!observers.isEmpty()) && (timeTillClosing == 3))
             notifyObservers();
         // Benachrichtigung der Observer über das Schließen des Spiels.
         if ((!observers.isEmpty()) && (timeTillClosing == 0))
