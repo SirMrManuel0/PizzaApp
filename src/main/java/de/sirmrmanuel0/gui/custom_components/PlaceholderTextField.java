@@ -17,10 +17,12 @@ public class PlaceholderTextField extends JTextField implements FocusListener, D
         getDocument().addDocumentListener(this);
     }
 
+    // Überschreiben der paintComponent-Methode, um den Platzhaltertext zu zeichnen.
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // Nur den Platzhaltertext zeichnen, wenn das Textfeld leer ist und den Fokus nicht hat.
         if (getText().isEmpty() && !hasFocus()) {
             FontMetrics metrics = g.getFontMetrics(getFont());
             int textWidth = metrics.stringWidth(placeholder);
@@ -32,6 +34,7 @@ public class PlaceholderTextField extends JTextField implements FocusListener, D
         }
     }
 
+    // Implementierung der FocusListener-Schnittstelle für Fokusereignisse.
     @Override
     public void focusGained(FocusEvent e) {
         repaint();
@@ -42,6 +45,7 @@ public class PlaceholderTextField extends JTextField implements FocusListener, D
         repaint();
     }
 
+    // Implementierung der DocumentListener-Schnittstelle für Dokumentänderungen.
     @Override
     public void insertUpdate(DocumentEvent e) {
         repaint();

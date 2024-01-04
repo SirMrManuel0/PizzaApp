@@ -12,6 +12,7 @@ public class RoundedButton extends JButton {
         setContentAreaFilled(false);
     }
 
+    // Überschreiben der paintComponent-Methode, um einen abgerundeten Button zu zeichnen.
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
@@ -20,11 +21,14 @@ public class RoundedButton extends JButton {
         int width = getWidth();
         int height = getHeight();
 
+        // Erstellen eines abgerundeten Rechtecks für den Button.
         RoundRectangle2D roundedRectangle = new RoundRectangle2D.Float(0, 0, width, height, height, height);
 
+        // Füllen des Hintergrunds mit der Hintergrundfarbe des Buttons.
         g2d.setColor(getBackground());
         g2d.fill(roundedRectangle);
 
+        // Zeichnen des Rahmens mit der Vordergrundfarbe des Buttons.
         g2d.setColor(getForeground());
         g2d.draw(roundedRectangle);
 

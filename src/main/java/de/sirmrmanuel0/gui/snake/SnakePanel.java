@@ -8,12 +8,14 @@ import java.util.Random;
 
 public class SnakePanel extends JPanel implements ActionListener {
 
+    // Konstanten für die Größe der Spielfläche, Einheitsgröße, Verzögerung und maximale Spielereinheiten.
     static final int UNIT_SIZE = 25;
     static final int DELAY = 75;
     static final int GAME_WIDTH = 600;
     static final int GAME_HEIGHT = 600;
     static final int GAME_UNITS = (GAME_HEIGHT*GAME_WIDTH)/UNIT_SIZE;
 
+    // Arrays zur Speicherung der Positionen von Schlangenkörper und Apfel.
     protected int[] x = new int[GAME_UNITS];
     protected int[] y = new int[GAME_UNITS];
     protected int bodyParts = 6;
@@ -41,21 +43,26 @@ public class SnakePanel extends JPanel implements ActionListener {
         startGame();
     }
 
+    // Methode zum Hinzufügen eines Observers für Game Over-Ereignisse.
     public void addObserver(GameOverObserver observer){
         observers.add(observer);
     }
 
+    // Benachrichtigung aller Observer über das Game Over-Ereignis.
     protected void notifyObservers() {
         for (GameOverObserver observer : observers) {
             observer.onGameOver(score);
         }
     }
+
+    // Benachrichtigung aller Observer, dass das Spiel geschlossen wird.
     protected void notifyObserversClose(){
         for (GameOverObserver observer : observers) {
             observer.toClose();
         }
     }
 
+    // Initialisierung des Spiels beim Start.
     protected void startGame(){
         genApple();
         running = true;
@@ -63,14 +70,17 @@ public class SnakePanel extends JPanel implements ActionListener {
         timer.start();
     }
 
+    // Überschreiben der paintComponent-Methode zum Zeichnen des Spiels.
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         draw(g);
     }
 
+    // Methode zum Zeichnen des Spiels.
     protected void draw(Graphics g){
         if (running){
+            // Zeichnen des Hintergrunds.
             int ev = 0;
             for (int i = 0; i<=GAME_HEIGHT/UNIT_SIZE; i++){
                 if (i % 2 == 1){
@@ -90,9 +100,12 @@ public class SnakePanel extends JPanel implements ActionListener {
 
                 }
             }
+
+            // Zeichnen des Apfels.
             g.setColor(Color.red);
             g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
+            // Zeichnen der Schlange.
             for (int i = 0; i < bodyParts; i++) {
                 if (i == 0) {
                     g.setColor(new Color(2, 29, 207));
@@ -103,7 +116,7 @@ public class SnakePanel extends JPanel implements ActionListener {
                 g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
             }
 
-
+            // Anzeigen der Punktzahl.
             g.setColor(new Color(112, 8, 8));
             g.setFont(new Font("SanSerif", Font.BOLD, 35));
             FontMetrics metrics = getFontMetrics(g.getFont());
@@ -112,10 +125,12 @@ public class SnakePanel extends JPanel implements ActionListener {
 
 
         } else {
+            // Anzeigen des Game Over-Bildschirms.
             gameOver(g);
         }
     }
 
+    // Generieren eines neuen Apfels.
     protected void genApple(){
         while (newAppleInSnake()) {
             appleX = random.nextInt((int) (GAME_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
@@ -124,16 +139,16 @@ public class SnakePanel extends JPanel implements ActionListener {
 
     }
 
+    // Überprüfen, ob der neue Apfel in der Schlange liegt.
     protected boolean newAppleInSnake(){
-
         for (int i = 0; i < GAME_UNITS; i ++){
             if((x[i] == appleX) && (y[i] == appleY))
                 return true;
         }
-
         return false;
     }
 
+    // Bewegen der Schlange.
     protected void move(){
         for (int i = bodyParts; i > 0; i--){
             x[i] = x[i-1];
@@ -156,6 +171,7 @@ public class SnakePanel extends JPanel implements ActionListener {
         }
     }
 
+    // Umgekehrtes Bewegen der Schlange.
     protected void reverseMove(){
         for (int i = 0; i < bodyParts-1; i++){
             x[i] = x[i+1];
@@ -178,6 +194,7 @@ public class SnakePanel extends JPanel implements ActionListener {
         }
     }
 
+    // Überprüfen, ob der Apfel gefressen wurde.
     protected void checkApple(){
         if((x[0] == appleX) && (y[0] == appleY)){
             bodyParts++;
@@ -188,8 +205,9 @@ public class SnakePanel extends JPanel implements ActionListener {
 
     }
 
+    // Überprüfen auf Kollisionen.
     protected boolean checkCollisions(){
-        // testet, ob der Kopf mit dem Körper kollidiert
+        // Testen, ob der Kopf mit dem Körper kollidiert.
         for (int i = bodyParts; i > 0; i--){
             if ((x[0] == x[i]) && (y[0] == y[i])){
                 running = false;
@@ -197,54 +215,57 @@ public class SnakePanel extends JPanel implements ActionListener {
             }
         }
 
-        // testet, ob der Kopf mit der linken Grenze kollidiert
-        if (x[0] < 0){
+        // Testen, ob der Kopf mit den Spielfeldgrenzen kollidiert.
+        //  linke Grenze | rechte Grenze | obere Grenze | untere Grenze
+        if (x[0] < 0 || x[0] == GAME_WIDTH || y[0] < 0 || y[0] == GAME_HEIGHT){
             running = false;
         }
 
-        // testet, ob der Kopf mit der rechten Grenze kollidiert
-        if (x[0] == GAME_WIDTH){
-            running = false;
-        }
-
-        // testet, ob der Kopf mit der oberen Grenze kollidiert
-        if (y[0] < 0){
-            running = false;
-        }
-
-        // testet, ob der Kopf mit der unteren Grenze kollidiert
-        if (y[0] == GAME_HEIGHT){
-            running = false;
-        }
-
+        // Stoppen des Timers und Rückgabe des Spielzustands.
         if (!running){
             timer.stop();
         }
 
         return !running;
-
     }
 
+    // Anzeigen des Game Over-Bildschirms.
     protected void gameOver(Graphics g){
         close.start();
+
+        // Konfiguriert die Schriftart und Farbe für den Game Over-Bildschirm.
         Font gameOverFont = new Font("SanSerif", Font.BOLD, 60);
         g.setColor(new Color(112, 8, 8));
         g.setFont(gameOverFont);
+
+        // Ermittelt die Metriken der aktuellen Schriftart.
         FontMetrics metrics = getFontMetrics(g.getFont());
+
+        // Zeichnet den Text "Game Over!" in der Mitte des Spielfelds.
         g.drawString("Game Over!", (GAME_WIDTH - metrics.stringWidth("Game Over!")) / 2, GAME_HEIGHT/2);
+
+        // Konfiguriert die Schriftart und Farbe für die Punktzahl und den Schließungshinweis.
         g.setColor(new Color(112, 8, 8));
         g.setFont(new Font("SanSerif", Font.BOLD, 35));
         FontMetrics metrics2 = getFontMetrics(g.getFont());
+
+        // Zeichnet die Punktzahl unter dem "Game Over!"-Text.
         g.drawString("Punkte: " + score, (GAME_WIDTH - metrics2.stringWidth("Punkte: " + score)) / 2, GAME_HEIGHT/2 + gameOverFont.getSize());
+
+        // Zeichnet den Schließungshinweis und die verbleibende Zeit.
         g.drawString("Dieses Fenster schließt sich in " + timeTillClosing + "s.",
                 (GAME_WIDTH - metrics2.stringWidth("Dieses Fenster schließt sich in " + timeTillClosing + "s.")) / 2,
                 GAME_HEIGHT/2 + (gameOverFont.getSize() + g.getFont().getSize()));
+
+        // Benachrichtigung der Observer über das Game Over-Ereignis.
         if ((!observers.isEmpty()) && (timeTillClosing == 10))
             notifyObservers();
+        // Benachrichtigung der Observer über das Schließen des Spiels.
         if ((!observers.isEmpty()) && (timeTillClosing == 0))
             notifyObserversClose();
     }
 
+    // KeyAdapter für Tastatureingaben.
     protected class myKeyAdapter extends KeyAdapter{
         @Override
         public void keyPressed(KeyEvent e){
@@ -280,6 +301,7 @@ public class SnakePanel extends JPanel implements ActionListener {
         }
     }
 
+    // ActionListener für das Schließen des Spiels.
     protected class ClosingActionListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -287,6 +309,8 @@ public class SnakePanel extends JPanel implements ActionListener {
             repaint();
         }
     }
+
+    // ActionListener für das Bewegen der Schlange.
     @Override
     public void actionPerformed(ActionEvent e) {
         if (running){
@@ -297,5 +321,4 @@ public class SnakePanel extends JPanel implements ActionListener {
         }
         repaint();
     }
-
 }

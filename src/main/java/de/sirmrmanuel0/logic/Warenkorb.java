@@ -3,7 +3,6 @@ package de.sirmrmanuel0.logic;
 import de.sirmrmanuel0.gui.custom_components.UpdaterPanel;
 import de.sirmrmanuel0.pizza.Pizza;
 
-import javax.swing.*;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +10,6 @@ import java.math.BigDecimal;
 import java.security.CodeSource;
 import java.util.*;
 import java.net.URL;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -22,6 +20,9 @@ public class Warenkorb {
     protected ArrayList<Pizza[]> AllToBuy;
     protected ArrayList<Object[]> Rabatte;
 
+    /**
+     * Konstruktor für den Warenkorb. Initialisiert verschiedene Listen.
+     */
     public Warenkorb(){
         Rabatte = new ArrayList<>();
         AllPossible = new ArrayList<>();
@@ -31,6 +32,9 @@ public class Warenkorb {
         initAllPossible();
     }
 
+    /**
+     * Initialisiert die Liste der möglichen Pizzen und deren Konstruktoren.
+     */
     protected void initAllPossible(){
         AllPossible = getConstructors();
 
@@ -46,59 +50,136 @@ public class Warenkorb {
         }
     }
 
+    /**
+     * Setzt die Liste der möglichen UpdaterPanels.
+     * @param panels Liste der UpdaterPanels
+     */
     public void setAllPossiblePanel(ArrayList<UpdaterPanel> panels) {AllPossiblePanel = panels;};
+
+    /**
+     * Fügt ein UpdaterPanel zur Liste der möglichen UpdaterPanels hinzu.
+     * @param panel Das hinzuzufügende UpdaterPanel
+     */
     public void addAllPossiblePanel(UpdaterPanel panel){AllPossiblePanel.add(panel);}
+
+    /**
+     * Fügt eine Pizza zur Liste der zu kaufenden Pizzen hinzu.
+     * @param pizza Die hinzuzufügende Pizza
+     */
     public void add(Pizza[] pizza){AllToBuy.add(pizza);}
+
+    /**
+     * Entfernt eine Pizza aus der Liste der zu kaufenden Pizzen.
+     * @param pizza Die zu entfernende Pizza
+     */
     public void remove(Pizza[] pizza){AllToBuy.remove(pizza);}
+
+    /**
+     * Entfernt eine Pizza anhand ihres Index aus der Liste der zu kaufenden Pizzen.
+     * @param index Der Index der zu entfernenden Pizza
+     */
     public void remove(int index){AllToBuy.remove(index);}
+
+    /**
+     * Fügt einen Rabatt zur Liste der Rabatte hinzu.
+     * @param Grund Grund des Rabatts
+     * @param rabatt Höhe des Rabatts
+     */
     public void addRabatt(String Grund, double rabatt){Rabatte.add(new Object[]{Grund, new BigDecimal(rabatt)});}
+
+    /**
+     * Gibt die Liste der zu kaufenden Pizzen zurück.
+     * @return Liste der zu kaufenden Pizzen
+     */
     public ArrayList<Pizza[]> getAllToBuy(){return AllToBuy;}
+
+    /**
+     * Gibt die Liste der möglichen Konstruktoren zurück.
+     * @return Liste der möglichen Konstruktoren
+     */
     public ArrayList<Constructor[]> getAllPossible(){return AllPossible;}
+
+    /**
+     * Gibt die Liste der möglichen Instanzen zurück.
+     * @return Liste der möglichen Instanzen
+     */
     public ArrayList<Pizza[]> getAllPossibleInstances(){return AllPossibleInstances;}
+
+    /**
+     * Gibt die Liste der möglichen UpdaterPanels zurück.
+     * @return Liste der möglichen UpdaterPanels
+     */
     public ArrayList<UpdaterPanel> getAllPossiblePanel(){return AllPossiblePanel;}
+
+    /**
+     * Gibt die Liste der Rabatte zurück.
+     * @return Liste der Rabatte
+     */
     public ArrayList<Object[]> getRabatte(){return Rabatte;}
+
+    /**
+     * Berechnet den Gesamtpreis inklusive Rabatte.
+     * @return Der Gesamtpreis
+     */
     public double getGesamtPreis(){
+        // GesamtPreis als BigDecimal initialisieren
         BigDecimal GesamtPreis = new BigDecimal(0);
 
+        // Durchlaufen aller Pizzen im Warenkorb
         for (Pizza[] pizza : AllToBuy){
             for (int i = 0; i<4; i++){
+                // Gesamtpreis mit Einzelpreis und Anzahl der Pizzen aktualisieren
                 GesamtPreis = GesamtPreis.add(new BigDecimal(pizza[i].getPreis()).multiply(new BigDecimal(pizza[i].toString())));
             }
         }
 
+        // Rabatte abziehen, falls vorhanden
         if (!Rabatte.isEmpty()){
             for (Object[] val : Rabatte){
                 GesamtPreis = GesamtPreis.subtract((BigDecimal) val[1]);
             }
         }
 
+        // Runden und Umwandlung in double für die Rückgabe
         double gesamt = GesamtPreis.doubleValue();
         gesamt = (double) Math.round(gesamt * 100) / 100;
         String gesamtStr = String.valueOf((int) (gesamt * 100));
-        gesamt = Double.parseDouble(gesamtStr.substring(0, gesamtStr.length()-2) + "." + gesamtStr.substring(gesamtStr.length()-2));
+        gesamt = Double.parseDouble(gesamtStr.substring(0, gesamtStr.length()-2)
+                + "." + gesamtStr.substring(gesamtStr.length()-2));
 
         return gesamt;
     }
+
+    /**
+     * Berechnet den Gesamtpreis ohne Rabatte.
+     * @return Der Gesamtpreis ohne Rabatte
+     */
     public double getGesamtPreisOhneRabatt(){
+        // GesamtPreis als BigDecimal initialisieren
         BigDecimal GesamtPreis = new BigDecimal(0);
 
+        // Durchlaufen aller Pizzen im Warenkorb
         for (Pizza[] pizza : AllToBuy){
             for (int i = 0; i<4; i++){
+                // Gesamtpreis ohne Rabatte mit Einzelpreis und Anzahl der Pizzen aktualisieren
                 GesamtPreis = GesamtPreis.add(new BigDecimal(pizza[i].getPreis()).multiply(new BigDecimal(pizza[i].toString())));
             }
         }
 
+        // Runden und Umwandlung in double für die Rückgabe
         double gesamt = GesamtPreis.doubleValue();
         gesamt = (double) Math.round(gesamt * 100) / 100;
         String gesamtStr = String.valueOf((int) (gesamt * 100));
-        gesamt = Double.parseDouble(gesamtStr.substring(0, gesamtStr.length()-2) + "." + gesamtStr.substring(gesamtStr.length()-2));
+        gesamt = Double.parseDouble(gesamtStr.substring(0, gesamtStr.length()-2)
+                + "." + gesamtStr.substring(gesamtStr.length()-2));
 
         return gesamt;
     }
 
-
-
-    // Methode zum Abrufen der Konstruktoren
+    /**
+     * Methode zum Abrufen der Konstruktoren.
+     * @return Liste der Konstruktoren
+     */
     protected ArrayList<Constructor[]> getConstructors(){
         // Liste aller Konstruktoren
         ArrayList<Constructor[]> AllConstructor = new ArrayList<>();
