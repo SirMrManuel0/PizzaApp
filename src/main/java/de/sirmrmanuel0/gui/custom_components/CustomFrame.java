@@ -163,6 +163,21 @@ public class CustomFrame extends JFrame {
      * Loads an image from the specified filename.
      *
      * @param filename The filename of the image.
+     * @param path The path to the image in case the getResource does not work.
+     * @return         The loaded image.
+     */
+    public Image loadImage(String filename, String path) {
+        try{
+            return new ImageIcon(getClass().getClassLoader().getResource(filename)).getImage();
+        } catch (Exception e){
+            return new ImageIcon(path).getImage();
+        }
+
+    }
+    /**
+     * Loads an image from the specified filename.
+     *
+     * @param filename The filename of the image.
      * @return         The loaded image.
      */
     public Image loadImage(String filename) {

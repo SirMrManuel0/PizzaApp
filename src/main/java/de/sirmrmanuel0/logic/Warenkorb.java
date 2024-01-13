@@ -140,6 +140,8 @@ public class Warenkorb {
             }
         }
 
+        if (GesamtPreis.equals(new BigDecimal(0))) return 0.0;
+
         // Runden und Umwandlung in double für die Rückgabe
         double gesamt = GesamtPreis.doubleValue();
         gesamt = (double) Math.round(gesamt * 100) / 100;

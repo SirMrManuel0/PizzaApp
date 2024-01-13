@@ -45,7 +45,7 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         this.Korb = Korb;
         GesamtSumme = Korb.getGesamtPreis();
         Waren = new ArrayList<JPanel>();
-        setBackgroundImage(loadImage("background.jpg"));
+        setBackgroundImage(loadImage("background.jpg", "src/main/resources/background.jpg"));
         initComponents();
         if (!Korb.getRabatte().isEmpty())
             rabatt();
@@ -106,7 +106,7 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         Kontakt.addActionListener(new Start.FooterActionListener());
 
         // Logo-Icon laden, skalieren und in ein ImageIcon umwandeln
-        ImageIcon originalIcon = new ImageIcon(loadImage("logo_prop2.jpg"));
+        ImageIcon originalIcon = new ImageIcon(loadImage("logo_prop2.jpg", "src/main/resources/logo_prop2.jpg"));
         Image resizedImage = originalIcon.getImage();
         resizedImage = resizedImage.getScaledInstance(
                 getWidth() / 11,
@@ -295,7 +295,7 @@ public class Kasse extends CustomFrame implements GameOverObserver {
             JLabel MengeNormal = new JLabel("32cm x " + Pizza[2].toString() + " x " + String.valueOf(Pizza[2].getPreis()).replace(".",",") + "€");
             JLabel MengeBig = new JLabel("38cm x " + Pizza[3].toString() + " x " + String.valueOf(Pizza[3].getPreis()).replace(".",",") + "€");
             JLabel Name = new JLabel(Pizza[0].getName());
-            ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png"));
+            ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png", "src/main/resources/logo_prop1.png"));
             JLabel Icon = new JLabel();
             JPanel IconPanel = new JPanel();
             JPanel Schrift = new JPanel();
@@ -434,7 +434,7 @@ public class Kasse extends CustomFrame implements GameOverObserver {
             Name.setForeground(Color.WHITE);
 
             // Größen und Layouts für die Panels und Komponenten festlegen
-            PizzaPanel.setPreferredSize(getScaledDimension(0.9,10));
+            PizzaPanel.setPreferredSize(getScaledDimension(0.66,10));
             IconPanel.setPreferredSize(getScaledDimension(15,14));
             Schrift.setPreferredSize(getScaledDimension(2.4,11));
             Buttons.setPreferredSize(getScaledDimension(2.8,11));
@@ -673,11 +673,11 @@ public class Kasse extends CustomFrame implements GameOverObserver {
             if (Korb.getAllToBuy().isEmpty()){
                 // Zeige eine Abschlussmeldung und schließe das Kasse-Fenster
                 Object[] message = {
-                        "Schade, dass Sie nichts für sich gefunden haben!",
-                        "Bis zum nächsten mal!"
+                        "Schade, dass Sie nichts für sich gefunden haben!"
                 };
                 JOptionPane.showMessageDialog(Kasse.this, message, "Auf Wiedersehen", JOptionPane.INFORMATION_MESSAGE);
                 Kasse.this.dispose();
+                new Start(Korb, getLocation());
                 return;
             }
 
