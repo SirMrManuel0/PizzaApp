@@ -293,7 +293,7 @@ public class Warenkorb {
 
                     // Pfad des Pakets im Dateisystem erstellen
                     String packagePath = packageName.replace(".", "/");
-                    File packageDirectory = new File("src/main/java/" + packagePath);
+                    File packageDirectory = new File("src/" + packagePath);
 
                     // Überprüfen, ob das Verzeichnis existiert und ein Verzeichnis ist
                     if (packageDirectory.exists() && packageDirectory.isDirectory()) {

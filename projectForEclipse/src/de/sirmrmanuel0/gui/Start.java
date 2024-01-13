@@ -32,7 +32,7 @@ public class Start extends CustomFrame {
     public Start(){
         super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         Korb = new Warenkorb();
-        setBackgroundImage(loadImage("background.jpg", "src/main/resources/background.jpg"));
+        setBackgroundImage(loadImage("background.jpg", "resources/background.jpg"));
         initComponents(true);
     }
 
@@ -44,7 +44,7 @@ public class Start extends CustomFrame {
     public Start(Warenkorb Korb, Point Location){
         super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         this.Korb = Korb;
-        setBackgroundImage(loadImage("background.jpg", "src/main/resources/background.jpg"));
+        setBackgroundImage(loadImage("background.jpg", "resources/background.jpg"));
         initComponents(false);
 
         double gesamt = this.Korb.getGesamtPreis();
@@ -112,7 +112,7 @@ public class Start extends CustomFrame {
         Kontakt.addActionListener(new FooterActionListener());
 
         // Laden des Logos und Skalieren des Bildes
-        ImageIcon originalIcon = new ImageIcon(loadImage("logo_prop2.jpg", "src/main/resources/logo_prop2.jpg"));
+        ImageIcon originalIcon = new ImageIcon(loadImage("logo_prop2.jpg", "resources/logo_prop2.jpg"));
         Image resizedImage = originalIcon.getImage();
         resizedImage = resizedImage.getScaledInstance(
                 getWidth() / 11,
@@ -275,7 +275,7 @@ public class Start extends CustomFrame {
         RoundedButton Big = new RoundedButton("38 cm " + Pizza[3].getPreis() + "€");
         JLabel Name = new JLabel(Pizza[0].getName());
         JLabel Beschreibung = new JLabel(Pizza[0].getBeschreibung());
-        ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png", "src/main/resources/logo_prop1.png"));
+        ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png", "resources/logo_prop1.png"));
         JLabel Icon = new JLabel();
         JPanel IconPanel = new JPanel();
         JPanel Schrift = new JPanel();
