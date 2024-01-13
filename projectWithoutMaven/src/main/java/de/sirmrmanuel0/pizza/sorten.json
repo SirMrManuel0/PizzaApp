@@ -1,0 +1,158 @@
+{
+  "Chicago": {
+    "preise": [10.99, 12.39, 14.79, 19.69],
+    "beschreibung": "Pizza mit Thunfisch und Zwiebeln."
+  },
+  "Dallas": {
+    "preise": [11.29, 12.49, 14.89, 20.39],
+    "beschreibung": "Pizza mit doppelt Salami auf dem Käse."
+  },
+  "Hot San Antonio": {
+    "preise": [14.49, 16.29, 19.09, 25.39],
+    "beschreibung": "Pizza mit geräucherter Putenbrust (halal). Beef (100% Rind, gewürzt). Jalapeños und Sauce Hollandaise."
+  },
+  "Montana": {
+    "preise": [12.19, 13.79, 16.39, 21.69],
+    "beschreibung": "Pizza mit saftigen Rindfleisch-Streifen, Broccoli und Sauce Hollandaise."
+  },
+  "Kentucky": {
+    "preise": [10.99, 12.39, 14.79, 19.69],
+    "beschreibung": "Pizza mit Currychicken und Ananas."
+  },
+  "Pittsburgh": {
+    "preise": [12.89, 14.39, 16.99, 22.89],
+    "beschreibung": "Pizza mit Hähnchenbrustfilet. Blattspinat. einer Prise Knoblauch und Crème fraîche."
+  },
+  "San Francisco": {
+    "preise": [11.29, 12.49, 14.89, 20.39],
+    "beschreibung": "Pizza mit Hinterschinken und frischen Champignon."
+  },
+  "Hot Tucson": {
+    "preise": [11.79, 13.29, 15.89, 21.19],
+    "beschreibung": "Pizza mit Peperonisalami. Jalapeños und Sauce Hollandaise."
+  },
+  "Kansas": {
+    "preise": [11.29, 12.49, 14.89, 20.39],
+    "beschreibung": "Pizza mit Peperonisalami und frischen Champignon."
+  },
+  "New Orleans": {
+    "preise": [14.09, 15.79, 18.59, 24.89],
+    "beschreibung": "Pizza mit geräucherter Putenbrust (halal). Broccoli. grünem Spargel und Sauce Hollandaise."
+  },
+  "New Holland": {
+    "preise": [11.79, 13.29, 15.89, 21.19],
+    "beschreibung": "Pizza mit grünem Spargel, Broccoli und Sauce Hollandaise."
+  },
+  "Bakersfie": {
+    "preise": [13.29, 14.89, 17.49, 23.39],
+    "beschreibung": "Pizza mit Sucuk (halal). milden Peperoni und Hirtenkäse."
+  },
+  "Denv": {
+    "preise": [10.99, 12.49, 14.49, 19.99],
+    "beschreibung": "Pizza mit Salami, frischen Champignons und Zwiebeln."
+  },
+  "Memphis": {
+    "preise": [14.09, 15.79, 18.59, 24.89],
+    "beschreibung": "Pizza mit Hähnchenbrustfilet. Blattspinat. Cherry-Tomaten und Knoblauch-Sauce."
+  },
+  "El Paso": {
+    "preise": [13.59, 14.99, 17.59, 24.09],
+    "beschreibung": "Pizza mit Mozzarella. Tomate. frischen Champignons und einer Prise Basilikum."
+  },
+  "New Arizona": {
+    "preise": [12.89, 14.29, 18.59, 25.39],
+    "beschreibung": "Pizza mit Hähnchen-Döner und Zwiebeln. dazu ein Becher (zur 32er zwei Becher. zur 38er drei Becher) Tzatziki."
+  },
+  "Buffalo": {
+    "preise": [11.69, 12.89, 15.09, 21.49],
+    "beschreibung": "Pizza mit Bauernschinken und einem Becher (zur 38er zwei Becher) Sour Cream (100 ml)."
+  },
+  "Alaska": {
+    "preise": [11.69, 12.99, 15.39, 20.89],
+    "beschreibung": "Pizza mit Räucherlachs. Crème fraîche und Dillspitze."
+  },
+  "Vegetarian Island": {
+    "preise": [13.69, 15.29, 18.09, 24.39],
+    "beschreibung": "Pizza mit Broccoli, Paprika, Mais und frischen Champignons."
+  },
+  "China Town": {
+    "preise": [14.09, 15.79, 18.59, 24.89],
+    "beschreibung": "Pizza mit Hähnchenbrustfilet, Paprika, Ananas und Sweet Chili Sauce."
+  },
+  "Wyoming": {
+    "preise": [11.99, 13.99, 17.49, 21.99],
+    "beschreibung": "Vier-Käse-Pizza) Pizza mit Gouda. Mozzarella. Gorgonzola und Hirtenkäse. Nur mit Rand und ungeschnitten bestellbar."
+  },
+  "California": {
+    "preise": [12.49, 13.89, 16.49, 22.39],
+    "beschreibung": "Pizza mit Baconwürfeln, Ei und Sauce Hollandaise."
+  },
+  "Seattle": {
+    "preise": [13.39, 15.19, 17.99, 23.69],
+    "beschreibung": "Pizza mit Currychicken, Zwiebeln, Jalapeños und Barbecue-Sauce."
+  },
+  "Texas": {
+    "preise": [14.09, 15.79, 18.59, 24.89],
+    "beschreibung": "Pizza mit Baconwürfeln, Mais, Beef (100% Rind, gewürzt) und Barbecue-Sauce."
+  },
+  "Indiana": {
+    "preise": [15.49, 16.99, 19.79, 27.29],
+    "beschreibung": "Pizza mit Hinterschinken. Cherry-Tomaten. Rucola und frischem Trentingran."
+  },
+  "Utah": {
+    "preise": [15.49, 16.99, 19.79, 27.29],
+    "beschreibung": "Pizza mit Salami, Tomate, Mozzarella und Rucola."
+  },
+  "Florida": {
+    "preise": [12.89, 14.39, 16.99, 22.89],
+    "beschreibung": "Pizza mit Black Tiger Garnelen. grünem Spargel und Sweet Chili Sauce."
+  },
+  "Tacoma": {
+    "preise": [14.49, 16.29, 19.09, 25.39],
+    "beschreibung": "Pizza mit Beef (100% Rind, gewürzt), Blattspinat, Hirtenkäse und Knoblauch-Sauce."
+  },
+  "Pasadena": {
+    "preise": [13.79, 15.19, 17.79, 23.69],
+    "beschreibung": "Vollkornpizza aus einer Dinkel-. Roggen- und Weizenmischung mit Hirtenkäse. Blattspinat und Cherry-Tomate."
+  },
+  "Iowa": {
+    "preise": [10.99, 12.49, 14.49, 19.99],
+    "beschreibung": "Vegane Pizza mit Broccoli, Mais, roten Zwiebeln und veganem Schmelzgenuss Gouda-Art."
+  },
+  "New Be": {
+    "preise": [11.99, 13.49, 15.49, 21.99],
+    "beschreibung": "Pizza mit Peperonisalami. Zwiebeln. frischen Champignons und Crème fraîche."
+  },
+  "Oceanside": {
+    "preise": [14.09, 15.79, 18.59, 24.89],
+    "beschreibung": "Pizza mit Black Tiger Garnelen. Baconwürfeln. Jalapeños und Sauce Hollandaise."
+  },
+  "Vermo": {
+    "preise": [12.79, 14.49, 17.39, 23.19],
+    "beschreibung": "Vegane Pizza mit Blattspinat. frischen Champignons. roten Zwiebeln. veganem Schmelzgenuss Gouda-Art und einer Prise Knoblauch."
+  },
+  "Virginia": {
+    "preise": [11.69, 12.99, 15.39, 20.89],
+    "beschreibung": "Pizza mit Tomate und Hirtenkäse."
+  },
+  "Santa Maria": {
+    "preise": [13.99, 15.49, 18.49, 24.99],
+    "beschreibung": "100 % Vollkornpizza aus einer Dinkel-. Roggen- und Weizenmischung mit Broccoli. Hirtenkäse. milden Peperoni. frischen Champignons und Sweet Chili Sauce."
+  },
+  "Vollkorn-Tipp Charlotte": {
+    "preise": [16.09, 17.69, 20.49, 27.39],
+    "beschreibung": "Vollkornpizza mit frischen Champignons. Paprika. Mais und knusprigem Hirtenkäse überbacken."
+  },
+  "St. Louis": {
+    "preise": [14.09, 15.79, 18.59, 24.89],
+    "beschreibung": "Pizza mit Beef (100% Rind, gewürzt), Zwiebeln, Tomate und Remoulade."
+  },
+  "Washington": {
+    "preise": [19.49, 21.69, 25.09, 33.79],
+    "beschreibung": "Pizza mit geräucherter Putenbrust (halal). Beef (100% Rind gewürzt). frischen Champignons. Paprika. Jalapeños. Zwiebeln und Sauce Hollandaise."
+  },
+  "Santa Fe": {
+    "preise": [16.29, 18.39, 21.69, 28.89],
+    "beschreibung": "Vegane Pizza mit veganen Hähnchen-Art-Happen, Paprika, Mais, roten Zwiebeln, Barbecue-Sauce und veganem Schmelzgenuss Gouda-Art."
+  }
+}

@@ -1,0 +1,19 @@
+package de.sirmrmanuel0.pizza.pizzen.mid;
+
+import de.sirmrmanuel0.pizza.Pizza;
+
+
+// This is an AUTO-Generated Class
+public class Utah extends Pizza {
+    public Utah(){
+        Name = "Pizza Utah";
+        preis = 16.99;
+        Beschreibung = "Pizza mit Salami, Tomate, Mozzarella und Rucola.";
+    }
+
+   @Override
+   public void setPreis(double increment){this.anzahl += (int) increment;}
+
+   @Override
+   public String toString(){return String.valueOf(anzahl);}
+}
