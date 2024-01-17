@@ -35,7 +35,8 @@ public class Start extends CustomFrame {
         super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         Korb = new Warenkorb();
         try {
-            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)));
+            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)),
+                    0, 0, getWidth(), getHeight());
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
@@ -51,7 +52,8 @@ public class Start extends CustomFrame {
         super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         this.Korb = Korb;
         try {
-            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)));
+            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)),
+                    0, 0, getWidth(), getHeight());
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }

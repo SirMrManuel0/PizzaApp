@@ -48,7 +48,8 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         GesamtSumme = Korb.getGesamtPreis();
         Waren = new ArrayList<JPanel>();
         try {
-            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)));
+            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)),
+                    0, 0, getWidth(), getHeight());
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
