@@ -1,6 +1,5 @@
 package de.sirmrmanuel0.gui.custom_components;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Enumeration;
@@ -8,6 +7,9 @@ import java.util.Enumeration;
 /**
  * CustomFrame is a subclass of JFrame providing additional functionalities
  * and customization for creating GUI windows.
+ *
+ * @author SirMrManuel0
+ * @version 1.2
  */
 public class CustomFrame extends JFrame {
 
@@ -130,16 +132,7 @@ public class CustomFrame extends JFrame {
             // Handle exceptions, e.g., file not found
             e.printStackTrace();
         }
-
-        setContentPane(new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-
-                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        });
+        setBackgroundImage(backgroundImage, 0, 0, getImageWidth(backgroundImage), getImageHeight(backgroundImage));
     }
     /**
      * Sets the background image of the frame.
@@ -147,6 +140,14 @@ public class CustomFrame extends JFrame {
      * @param image The background image.
      */
     public void setBackgroundImage(Image image) {
+        setBackgroundImage(image, 0, 0, getImageWidth(image), getImageHeight(image));
+    }
+
+    public void setBackgroundImage(Image image, int x, int y) {
+        setBackgroundImage(image, x, y, getImageWidth(image), getImageHeight(image));
+    }
+
+    public void setBackgroundImage(Image image, int x, int y, int width, int height){
         backgroundImage = image;
         setContentPane(new JPanel() {
             @Override
@@ -154,9 +155,11 @@ public class CustomFrame extends JFrame {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
 
-                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                g2d.drawImage(backgroundImage, x, y, width, height, this);
             }
         });
+
+        repaint();
     }
 
     /**
@@ -167,11 +170,15 @@ public class CustomFrame extends JFrame {
      * @return         The loaded image.
      */
     public Image loadImage(String filename, String path) {
+
+        Image returne = null;
         try{
-            return new ImageIcon(getClass().getClassLoader().getResource(filename)).getImage();
-        } catch (Exception e){
-            return new ImageIcon(path).getImage();
-        }
+            returne = new ImageIcon(getClass().getClassLoader().getResource(filename)).getImage();
+        } catch (Exception e){}
+
+        if (returne == null || returne.getHeight(this) == -1)
+            returne =  new ImageIcon(path).getImage();
+        return returne;
 
     }
     /**
@@ -182,6 +189,158 @@ public class CustomFrame extends JFrame {
      */
     public Image loadImage(String filename) {
         return new ImageIcon(getClass().getClassLoader().getResource(filename)).getImage();
+    }
+
+    /**
+     * Scales an image.
+     *
+     * @param imageIcon The ImageIcon to scale.
+     * @param width     The desired width of the scaled icon.
+     * @param height    The desired height of the scaled icon.
+     * @return         The scaled ImageIcon.
+     */
+    public static ImageIcon scaleImageIcon(ImageIcon imageIcon, int width, int height) {
+        // Get the image from the ImageIcon
+        Image img = imageIcon.getImage();
+
+        // Resample the image to the desired size
+        Image scaledImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+
+        // Create a new ImageIcon with the scaled image
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+
+        return scaledImageIcon;
+    }
+
+    /**
+     * Scales an image.
+     *
+     * @param imageIcon The ImageIcon to scale.
+     * @param scaleWidth     The scale width of the scaled icon. original width * scaleWidth
+     * @param scaleHeight    The scale height of the scaled icon. original height * scaleHeight
+     * @return         The scaled ImageIcon.
+     */
+    public static ImageIcon scaleImageIcon(ImageIcon imageIcon, double scaleWidth, double scaleHeight) {
+        // Get the image from the ImageIcon
+        Image img = imageIcon.getImage();
+
+        // Resample the image to the desired size
+        Image scaledImage = img.getScaledInstance((int)(getImageIconWidth(imageIcon) * scaleWidth),
+                (int)(getImageIconHeight(imageIcon) * scaleHeight), Image.SCALE_SMOOTH);
+
+        // Create a new ImageIcon with the scaled image
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+
+        return scaledImageIcon;
+    }
+
+    /**
+     * Scales an image.
+     *
+     * @param img   The Image to scale.
+     * @param width     The desired width of the scaled icon.
+     * @param height    The desired height of the scaled icon.
+     * @return         The scaled Image.
+     */
+    public static Image scaleImage(Image img, int width, int height) {
+
+        // Resample the image to the desired size
+        return img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+    }
+
+    /**
+     * Scales an image.
+     *
+     * @param img   The Image to scale.
+     * @param scaleWidth     The scale width of the scaled icon. original width * scaleWidth
+     * @param scaleHeight    The scale height of the scaled icon. original height * scaleHeight
+     * @return         The scaled Image.
+     */
+    public static Image scaleImage(Image img, double scaleWidth, double scaleHeight) {
+
+        // Resample the image to the desired size
+        return img.getScaledInstance((int)(getImageWidth(img) * scaleWidth),
+                (int)(getImageHeight(img) * scaleHeight), Image.SCALE_SMOOTH);
+    }
+
+    /**
+     * Retrieves the width of an image represented by the provided ImageIcon object.
+     *
+     * @param imageIcon The ImageIcon containing the image to query.
+     * @return The width of the image in pixels.
+     */
+    public static int getImageIconWidth(ImageIcon imageIcon) {
+        // Retrieve the image from the ImageIcon
+        Image image = imageIcon.getImage();
+
+        // Get the width of the image
+        int width = image.getWidth(null);
+
+        return width;
+    }
+
+    /**
+     * Retrieves the height of an image represented by the provided ImageIcon object.
+     *
+     * @param imageIcon The ImageIcon containing the image to query.
+     * @return The height of the image in pixels.
+     */
+    public static int getImageIconHeight(ImageIcon imageIcon) {
+        // Retrieve the image from the ImageIcon
+        Image image = imageIcon.getImage();
+
+        // Get the height of the image
+        int height = image.getHeight(null);
+
+        return height;
+    }
+
+    /**
+     * Retrieves the dimensions of an image represented by the provided ImageIcon object as a Dimension object.
+     *
+     * @param imageIcon The ImageIcon containing the image to query.
+     * @return A Dimension object containing the width and height of the image.
+     */
+    public static Dimension getImageIconDimension(ImageIcon imageIcon) {
+        int width = getImageIconWidth(imageIcon);
+        int height = getImageIconHeight(imageIcon);
+        return new Dimension(width, height);
+    }
+
+    /**
+     * Retrieves the width of an image represented by the provided Image object.
+     *
+     * @param image The ImageIcon containing the image to query.
+     * @return The width of the image in pixels.
+     */
+    public static int getImageWidth(Image image) {
+
+        // Get the width of the image
+        return image.getWidth(null);
+    }
+
+    /**
+     * Retrieves the height of an image represented by the provided Image object.
+     *
+     * @param image The Image containing the image to query.
+     * @return The height of the image in pixels.
+     */
+    public static int getImageHeight(Image image) {
+
+        // Get the height of the image
+        return image.getHeight(null);
+    }
+
+    /**
+     * Retrieves the dimensions of an image represented by the provided Image object as a Dimension object.
+     *
+     * @param image The ImageIcon containing the image to query.
+     * @return A Dimension object containing the width and height of the image.
+     */
+    public static Dimension getImageDimension(Image image) {
+        int width = getImageWidth(image);
+        int height = getImageHeight(image);
+        return new Dimension(width, height);
     }
 
     // Private helper methods

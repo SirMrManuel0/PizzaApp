@@ -1,10 +1,12 @@
 package de.sirmrmanuel0.gui;
 
 import de.sirmrmanuel0.gui.custom_components.*;
+import de.sirmrmanuel0.logic.ConfigManager;
 import de.sirmrmanuel0.logic.Warenkorb;
 import de.sirmrmanuel0.pizza.Pizza;
 
 
+import javax.naming.ConfigurationException;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -32,7 +34,11 @@ public class Start extends CustomFrame {
     public Start(){
         super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         Korb = new Warenkorb();
-        setBackgroundImage(loadImage("background.jpg", "resources/background.jpg"));
+        try {
+            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)));
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         initComponents(true);
     }
 
@@ -44,7 +50,11 @@ public class Start extends CustomFrame {
     public Start(Warenkorb Korb, Point Location){
         super(1, 1.5, 1, 1.2, "Pizza Lieferung Deluxe", false);
         this.Korb = Korb;
-        setBackgroundImage(loadImage("background.jpg", "resources/background.jpg"));
+        try {
+            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)));
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         initComponents(false);
 
         double gesamt = this.Korb.getGesamtPreis();
@@ -112,7 +122,12 @@ public class Start extends CustomFrame {
         Kontakt.addActionListener(new FooterActionListener());
 
         // Laden des Logos und Skalieren des Bildes
-        ImageIcon originalIcon = new ImageIcon(loadImage("logo_prop2.jpg", "resources/logo_prop2.jpg"));
+        ImageIcon originalIcon = null;
+        try {
+            originalIcon = new ImageIcon(loadImage("logo_prop2.jpg", ConfigManager.readConfig(ConfigManager.LOGO_2)));
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         Image resizedImage = originalIcon.getImage();
         resizedImage = resizedImage.getScaledInstance(
                 getWidth() / 11,
@@ -259,7 +274,7 @@ public class Start extends CustomFrame {
      * Lädt eine Pizza mit einem bestimmten Index.
      * @param Index Index der Pizza, die geladen werden soll.
      */
-    protected void load(int Index){
+    protected void load(int Index) {
         // Überprüfen, ob es sich um ein gerades oder ungerades Kind handelt
         boolean EvenChild = (Index+1) % 2 == 0;
 
@@ -275,7 +290,12 @@ public class Start extends CustomFrame {
         RoundedButton Big = new RoundedButton("38 cm " + Pizza[3].getPreis() + "€");
         JLabel Name = new JLabel(Pizza[0].getName());
         JLabel Beschreibung = new JLabel(Pizza[0].getBeschreibung());
-        ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png", "resources/logo_prop1.png"));
+        ImageIcon LogoIcon = null;
+        try {
+            LogoIcon = new ImageIcon(loadImage("logo_prop1.png", ConfigManager.readConfig(ConfigManager.LOGO_1)));
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         JLabel Icon = new JLabel();
         JPanel IconPanel = new JPanel();
         JPanel Schrift = new JPanel();

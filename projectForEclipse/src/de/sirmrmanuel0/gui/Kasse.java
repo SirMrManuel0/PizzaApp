@@ -6,9 +6,11 @@ import de.sirmrmanuel0.gui.custom_components.RoundedCornerPanel;
 import de.sirmrmanuel0.gui.snake.GameOverObserver;
 import de.sirmrmanuel0.gui.snake.Snake;
 import de.sirmrmanuel0.gui.snake.SnakePanel;
+import de.sirmrmanuel0.logic.ConfigManager;
 import de.sirmrmanuel0.logic.Warenkorb;
 import de.sirmrmanuel0.pizza.Pizza;
 
+import javax.naming.ConfigurationException;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -45,7 +47,11 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         this.Korb = Korb;
         GesamtSumme = Korb.getGesamtPreis();
         Waren = new ArrayList<JPanel>();
-        setBackgroundImage(loadImage("background.jpg", "resources/background.jpg"));
+        try {
+            setBackgroundImage(loadImage("background.jpg", ConfigManager.readConfig(ConfigManager.BACKGROUND)));
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         initComponents();
         if (!Korb.getRabatte().isEmpty())
             rabatt();
@@ -106,7 +112,12 @@ public class Kasse extends CustomFrame implements GameOverObserver {
         Kontakt.addActionListener(new Start.FooterActionListener());
 
         // Logo-Icon laden, skalieren und in ein ImageIcon umwandeln
-        ImageIcon originalIcon = new ImageIcon(loadImage("logo_prop2.jpg", "resources/logo_prop2.jpg"));
+        ImageIcon originalIcon = null;
+        try {
+            originalIcon = new ImageIcon(loadImage("logo_prop2.jpg", ConfigManager.readConfig(ConfigManager.LOGO_2)));
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         Image resizedImage = originalIcon.getImage();
         resizedImage = resizedImage.getScaledInstance(
                 getWidth() / 11,
@@ -295,7 +306,12 @@ public class Kasse extends CustomFrame implements GameOverObserver {
             JLabel MengeNormal = new JLabel("32cm x " + Pizza[2].toString() + " x " + String.valueOf(Pizza[2].getPreis()).replace(".",",") + "€");
             JLabel MengeBig = new JLabel("38cm x " + Pizza[3].toString() + " x " + String.valueOf(Pizza[3].getPreis()).replace(".",",") + "€");
             JLabel Name = new JLabel(Pizza[0].getName());
-            ImageIcon LogoIcon = new ImageIcon(loadImage("logo_prop1.png", "resources/logo_prop1.png"));
+            ImageIcon LogoIcon = null;
+            try {
+                LogoIcon = new ImageIcon(loadImage("logo_prop1.png", ConfigManager.readConfig(ConfigManager.LOGO_1)));
+            } catch (ConfigurationException e) {
+                throw new RuntimeException(e);
+            }
             JLabel Icon = new JLabel();
             JPanel IconPanel = new JPanel();
             JPanel Schrift = new JPanel();
@@ -756,16 +772,16 @@ public class Kasse extends CustomFrame implements GameOverObserver {
 
                 // Quittung erstellen
                 Area.setText("----------------------------------------------------------\n"
-                            + "                       QUITTUNG\n"
-                            + "----------------------------------------------------------\n"
-                            + "\n"
-                            + "Datum: " + formatiertesDatum + "\n"
-                            + "Uhrzeit: " + formatierteUhrzeit + "\n"
-                            + "\n"
-                            + "----------------------------------------------------------\n"
-                            + "\n"
-                            + "Artikel                  Menge    Preis    Gesamt\n"
-                            + "----------------------------------------------------------\n");
+                        + "                       QUITTUNG\n"
+                        + "----------------------------------------------------------\n"
+                        + "\n"
+                        + "Datum: " + formatiertesDatum + "\n"
+                        + "Uhrzeit: " + formatierteUhrzeit + "\n"
+                        + "\n"
+                        + "----------------------------------------------------------\n"
+                        + "\n"
+                        + "Artikel                  Menge    Preis    Gesamt\n"
+                        + "----------------------------------------------------------\n");
 
                 for (Pizza[] Pizzen : Korb.getAllToBuy()){
                     // Für jede Pizza-Größe in der Bestellung

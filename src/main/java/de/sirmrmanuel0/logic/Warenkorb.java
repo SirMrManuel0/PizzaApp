@@ -3,6 +3,7 @@ package de.sirmrmanuel0.logic;
 import de.sirmrmanuel0.gui.custom_components.UpdaterPanel;
 import de.sirmrmanuel0.pizza.Pizza;
 
+import javax.naming.ConfigurationException;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -230,7 +231,8 @@ public class Warenkorb {
                             }
 
                             // Klassennamen filtern und zur Liste hinzufügen
-                            if (name.startsWith("de/sirmrmanuel0/pizza/pizzen/" + ordner) && name.endsWith(".class")) {
+                            if (name.startsWith(ConfigManager.readConfig(ConfigManager.PIZZEN_DIR) + ordner)
+                                    && name.endsWith(".class")) {
                                 if (i == 0){
                                     classNames.add(new String[4]);
                                     classNames.get(classNames.size() - 1)[i] = name.replace("/", ".").substring(0, name.length() - 6);
@@ -270,22 +272,22 @@ public class Warenkorb {
             try {
                 for (int i = 0; i<4; i++) {
                     // Paketname festlegen
-                    String packageName = "de.sirmrmanuel0.pizza.pizzen";
+                    String packageName = ConfigManager.readConfig(ConfigManager.PIZZEN_PACK);
                     switch (i){
                         case 0:{
-                            packageName = "de.sirmrmanuel0.pizza.pizzen.small";
+                            packageName += ".small";
                             break;
                         }
                         case 1:{
-                            packageName = "de.sirmrmanuel0.pizza.pizzen.mid";
+                            packageName += ".mid";
                             break;
                         }
                         case 2:{
-                            packageName = "de.sirmrmanuel0.pizza.pizzen.normal";
+                            packageName += ".normal";
                             break;
                         }
                         case 3:{
-                            packageName = "de.sirmrmanuel0.pizza.pizzen.big";
+                            packageName += ".big";
                             break;
                         }
                     }
@@ -293,7 +295,9 @@ public class Warenkorb {
 
                     // Pfad des Pakets im Dateisystem erstellen
                     String packagePath = packageName.replace(".", "/");
-                    File packageDirectory = new File("src/main/java/" + packagePath);
+                    File packageDirectory = new File(ConfigManager.readConfig(ConfigManager.SRC_DIR)
+                            + packagePath);
+
 
                     // Überprüfen, ob das Verzeichnis existiert und ein Verzeichnis ist
                     if (packageDirectory.exists() && packageDirectory.isDirectory()) {
@@ -335,6 +339,8 @@ public class Warenkorb {
                 }
             } catch (ClassNotFoundException | NoSuchMethodException e) {
                 e.printStackTrace();
+            } catch (ConfigurationException e) {
+                throw new RuntimeException(e);
             }
         }
         return AllConstructor;
