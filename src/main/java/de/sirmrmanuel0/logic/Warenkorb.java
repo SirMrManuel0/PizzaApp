@@ -211,20 +211,20 @@ public class Warenkorb {
 
                             String ordner = "";
 
-                            switch(i){
-                                case 0:{
+                            switch(i) {
+                                case 0: {
                                     ordner = "small";
                                     break;
                                 }
-                                case 1:{
+                                case 1: {
                                     ordner = "mid";
                                     break;
                                 }
-                                case 2:{
+                                case 2: {
                                     ordner = "normal";
                                     break;
                                 }
-                                case 3:{
+                                case 3: {
                                     ordner = "big";
                                     break;
                                 }

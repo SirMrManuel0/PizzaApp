@@ -60,11 +60,16 @@ public class Start extends CustomFrame {
         initComponents(false);
 
         double gesamt = this.Korb.getGesamtPreis();
-        if (gesamt > 0)
+        if (gesamt > 0){
             Warenkorb.setText("<html><center>Zum Warenkorb<br>" + String.valueOf(gesamt).replace(".", ",") + "€</center></html>");
-        else
+            Warenkorb.setEnabled(true);
+        }
+        else{
             Warenkorb.setText("<html><center>Zum Warenkorb</center></html>");
-        Warenkorb.setEnabled(false);
+            Warenkorb.setEnabled(false);
+        }
+
+
         setLocation(Location);
         setVisible(true);
     }
